@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Yahana Tutor · คลังแบบฝึกหัดคณิตศาสตร์และฟิสิกส์</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f4ef; --card:#ffffff; --ink:#1d2433; --muted:#5d6678; --line:#e3dfd5;
+  --math:#2d5bd8; --math-soft:#e8eefc; --phys:#d9642b; --phys-soft:#fcece3;
+  --ok:#14825a; --ok-soft:#e3f5ec; --bad:#c2372f; --bad-soft:#fbe7e5;
+  --line-green:#06c755; --accent:#1d2433; --radius:14px;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{font-family:'Sarabun',system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:17px;line-height:1.65}
+h1,h2,h3,.brand,.btn,.chip,.qn{font-family:'Prompt','Sarabun',sans-serif}
+a{color:inherit}
+button{font:inherit;cursor:pointer}
+.wrap{max-width:1040px;margin:0 auto;padding:0 18px}
+
+/* header */
+header{position:sticky;top:0;z-index:10;background:rgba(246,244,239,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.hbar{display:flex;align-items:center;gap:12px;height:62px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:700;font-size:19px;letter-spacing:.2px}
+.logo{width:34px;height:34px;border-radius:10px;background:var(--ink);color:#fff;display:grid;place-items:center;font-size:15px}
+.brand small{display:block;font-family:'Sarabun';font-weight:500;font-size:12px;color:var(--muted);margin-top:-4px}
+.spacer{flex:1}
+.toggle{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted);user-select:none}
+.switch{width:38px;height:22px;border-radius:20px;background:#cfcabd;position:relative;border:0;padding:0;transition:.2s}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.2s}
+.switch[aria-pressed="true"]{background:var(--ink)}
+.switch[aria-pressed="true"]::after{left:19px}
+.btn{border:0;border-radius:10px;padding:9px 16px;font-weight:600;font-size:15px;display:inline-flex;align-items:center;gap:8px;text-decoration:none;line-height:1.3}
+.btn-line{background:var(--line-green);color:#fff}
+.btn-line:hover{filter:brightness(.95)}
+.btn-dark{background:var(--ink);color:#fff}
+.btn-ghost{background:transparent;border:1.5px solid var(--line);color:var(--ink)}
+.btn-ghost:hover{border-color:#bdb7a8}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.line-ico{width:18px;height:18px;border-radius:5px;background:#fff;color:var(--line-green);display:grid;place-items:center;font-size:9px;font-weight:800}
+
+/* hero */
+.hero{padding:42px 0 18px}
+.hero h1{font-size:clamp(28px,4.4vw,42px);line-height:1.2;margin:0 0 10px}
+.hero p{color:var(--muted);margin:0 0 20px;max-width:640px}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:22px 0 6px}
+.step{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:14.5px}
+.step b{font-family:'Prompt';display:block;font-size:13px;color:var(--muted);font-weight:600}
+
+/* chips */
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 20px}
+.chip{border:1.5px solid var(--line);background:var(--card);border-radius:30px;padding:6px 14px;font-size:14px;font-weight:500}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+
+/* sections */
+.sec-title{display:flex;align-items:baseline;gap:10px;margin:30px 0 12px}
+.sec-title h2{margin:0;font-size:22px}
+.sec-title span{color:var(--muted);font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+.lvl{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;text-decoration:none;display:flex;flex-direction:column;gap:6px;transition:.15s;position:relative;overflow:hidden}
+.lvl:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(29,36,51,.08)}
+.lvl .tag{font-family:'Prompt';font-size:12px;font-weight:600;color:var(--muted)}
+.lvl h3{margin:0;font-size:19px;line-height:1.3}
+.lvl p{margin:0;color:var(--muted);font-size:14.5px;flex:1}
+.lvl .meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.pill{font-size:12px;padding:2px 9px;border-radius:20px;font-weight:600}
+.pill.math{background:var(--math-soft);color:var(--math)}
+.pill.phys{background:var(--phys-soft);color:var(--phys)}
+.pill.lock{background:#efece4;color:var(--muted)}
+.bar{height:6px;background:#eeeae1;border-radius:6px;overflow:hidden;margin-top:8px}
+.bar i{display:block;height:100%;background:var(--ok);border-radius:6px}
+.lvl .stripe{position:absolute;left:0;top:0;bottom:0;width:5px}
+
+/* line banner */
+.lbanner{margin:30px 0 8px;background:#0b3d23;color:#e9fff2;border-radius:var(--radius);padding:20px 22px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.lbanner h3{margin:0 0 2px;font-size:18px;color:#fff}
+.lbanner p{margin:0;font-size:14.5px;opacity:.85}
+.lbanner .txt{flex:1;min-width:240px}
+
+/* breadcrumb */
+.crumb{font-size:14px;color:var(--muted);margin:22px 0 6px}
+.crumb a{text-decoration:none;color:var(--muted)}
+.crumb a:hover{color:var(--ink);text-decoration:underline}
+.ptitle{margin:0 0 4px;font-size:clamp(24px,3.4vw,32px);line-height:1.25}
+.psub{color:var(--muted);margin:0 0 14px}
+
+/* topic list */
+.tlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.topic{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:15px 16px;text-decoration:none;display:flex;flex-direction:column;gap:4px;transition:.15s}
+.topic:hover{border-color:#bdb7a8}
+.topic .row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.topic h3{margin:0;font-size:17px}
+.topic small{color:var(--muted);font-size:13.5px}
+
+/* questions */
+.qs{display:flex;flex-direction:column;gap:16px;margin-top:8px}
+.q{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px}
+.q.correct{border-color:#9fd8bf}
+.qh{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.qn{font-weight:700;font-size:15px}
+.qtype{font-size:12px;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:1px 9px}
+.status{margin-left:auto;font-size:13px;font-weight:600}
+.status.ok{color:var(--ok)} .status.bad{color:var(--bad)}
+.qt{font-size:17.5px;margin:4px 0 12px}
+.choices{display:grid;gap:8px}
+.ch{text-align:left;border:1.5px solid var(--line);background:#fcfbf8;border-radius:10px;padding:9px 13px;display:flex;gap:10px;align-items:center;font-size:16.5px}
+.ch:hover{border-color:#bdb7a8}
+.ch .k{font-family:'Prompt';font-weight:600;color:var(--muted);min-width:26px}
+.ch.sel{border-color:var(--ink);background:#f1efe8}
+.ch.sel .k{color:var(--ink)}
+.ch.right{border-color:var(--ok);background:var(--ok-soft)}
+.ch.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.numrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ans{font:inherit;font-size:17px;border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;width:200px;background:#fcfbf8}
+.ans:focus{outline:none;border-color:var(--ink)}
+.unit{color:var(--muted)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.fb{margin-top:10px;font-weight:600;font-size:15.5px;display:none}
+.fb.show{display:block}
+.fb.ok{color:var(--ok)} .fb.bad{color:var(--bad)} .fb.neutral{color:var(--muted)}
+.hint{margin-top:10px;background:#fff8e1;border:1px dashed #e2c76a;border-radius:10px;padding:9px 13px;font-size:15.5px;display:none}
+.hint.show{display:block}
+.sol{margin-top:12px;background:#f4f6fb;border-left:4px solid var(--math);border-radius:0 10px 10px 0;padding:12px 15px;display:none}
+.sol.phys{border-left-color:var(--phys);background:#fdf5f0}
+.sol.show{display:block}
+.sol .ansline{font-family:'Prompt';font-weight:600;margin-bottom:6px}
+.sol ol{margin:4px 0 0;padding-left:22px}
+.sol p{margin:4px 0}
+
+/* summary */
+.summary{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-top:18px;display:none}
+.summary.show{display:block}
+.score{font-family:'Prompt';font-size:34px;font-weight:700}
+.bottombar{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0 10px}
+
+/* lock */
+.lockbox{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:26px;max-width:560px}
+.lockbox ol{padding-left:20px}
+.lockrow{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+
+/* math helpers */
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.86em;line-height:1.15;margin:0 2px}
+.fr>span:first-child{border-bottom:1.3px solid currentColor;padding:0 3px}
+.fr>span:last-child{padding:0 3px}
+.mx{display:inline-flex;flex-direction:column;vertical-align:middle;border-left:1.5px solid currentColor;border-right:1.5px solid currentColor;border-radius:4px;padding:1px 6px;line-height:1.3;margin:0 3px}
+.mr{display:flex;gap:12px;justify-content:space-around}
+.mr span{min-width:14px;text-align:center}
+.det{border-radius:0}
+
+footer{border-top:1px solid var(--line);margin-top:50px;padding:24px 0 40px;color:var(--muted);font-size:14px}
+.empty{color:var(--muted);padding:20px 0}
+
+@media (max-width:720px){
+  .steps{grid-template-columns:repeat(2,1fr)}
+  .toggle .lbl{display:none}
+  .hdr-line .txtl{display:none}
+  body{font-size:16px}
+  .q{padding:16px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap hbar">
+    <a class="brand" href="#">
+      <span class="logo">YT</span>
+      <span>Yahana Tutor<small>คลังแบบฝึกหัดคณิต · ฟิสิกส์</small></span>
+    </a>
+    <span class="spacer"></span>
+    <span class="toggle" title="แสดงวิธีทำทุกข้อทันที สำหรับครูใช้สอนหน้าชั้น">
+      <span class="lbl">โหมดครู</span>
+      <button class="switch" id="teacherSw" aria-pressed="false" aria-label="โหมดครู"></button>
+    </span>
+    <a class="btn btn-line hdr-line" id="hdrLine" target="_blank" rel="noopener"><span class="line-ico">LINE</span><span class="txtl">เพิ่มเพื่อน</span></a>
+  </div>
+</header>
+
+<main class="wrap" id="app"></main>
+
+<footer>
+  <div class="wrap">
+    © Yahana Tutor · คลังแบบฝึกหัดคณิตศาสตร์และฟิสิกส์ ตั้งแต่ประถมถึง A-Level<br>
+    ติดต่อ / รับโจทย์ชุดใหม่: LINE <b id="lineIdText"></b> · ความคืบหน้าบันทึกไว้ในเบราว์เซอร์ของผู้เรียนแต่ละคน
+  </div>
+</footer>
+
+<script>
+/* =========================================================
+   ตั้งค่าเว็บ — แก้ตรงนี้ได้เลย
+   ========================================================= */
+const CONFIG = {
+  lineId: '@yahanatutor',        // ไอดี LINE Official Account (ถ้าเป็นไอดีบัญชีส่วนตัว ให้เปลี่ยน lineUrl ด้านล่าง)
+};
+const LINE_URL = 'https://line.me/R/ti/p/' + encodeURIComponent(CONFIG.lineId);
+
+/* ตัวช่วยเขียนสูตร: F(a,b) = เศษส่วน, M('1 2;3 4') = เมทริกซ์ */
+const F = (a,b) => `<span class="fr"><span>${a}</span><span>${b}</span></span>`;
+const M = s => `<span class="mx">${s.split(';').map(r=>`<span class="mr">${r.trim().split(/\s+/).map(c=>`<span>${c}</span>`).join('')}</span>`).join('')}</span>`;
+const D = s => M(s).replace('class="mx"','class="mx det"');
+
+/* =========================================================
+   คลังโจทย์
+   ระดับ (level) → เรื่อง (topic) → โจทย์ (qs)
+   โจทย์ปรนัย:  {q:'โจทย์', t:'mc',  c:['ก','ข',...], a:ตำแหน่งคำตอบ(เริ่มที่ 0), h:'คำใบ้', s:'วิธีทำ'}
+   โจทย์เติมคำ: {q:'โจทย์', t:'num', a:ตัวเลขคำตอบ, u:'หน่วย', h:'คำใบ้', s:'วิธีทำ'}
+   ========================================================= */
+const LEVELS = [
+{ id:'primary', group:'grade', name:'ประถมศึกษา', tag:'ป.4 – ป.6', color:'#3aa17e',
+  desc:'ปูพื้นฐานเศษส่วน ร้อยละ ห.ร.ม. ค.ร.น. และพื้นที่ ปริมาตร',
+  topics:[
+  { id:'p-frac', subj:'math', name:'เศษส่วน', qs:[
+    {t:'mc', q:`${F(1,2)} + ${F(1,3)} มีค่าเท่าใด`, c:[F(2,5),F(5,6),F(1,6),F(2,6)], a:1,
+     h:'ทำตัวส่วนให้เท่ากันก่อน', s:`<ol><li>ค.ร.น. ของ 2 และ 3 คือ 6</li><li>${F(1,2)} = ${F(3,6)} และ ${F(1,3)} = ${F(2,6)}</li><li>${F(3,6)} + ${F(2,6)} = ${F(5,6)}</li></ol>`},
+    {t:'num', q:`${F(3,4)} ของ 20 เท่ากับเท่าใด`, a:15,
+     h:'"ของ" หมายถึงการคูณ', s:`<ol><li>${F(3,4)} × 20 = ${F('3 × 20',4)} = ${F(60,4)}</li><li>= 15</li></ol>`},
+    {t:'mc', q:`2${F(1,2)} × ${F(2,5)} มีค่าเท่าใด`, c:[F(4,5),'1',F(5,4),'2'], a:1,
+     h:'เปลี่ยนจำนวนคละเป็นเศษเกินก่อน', s:`<ol><li>2${F(1,2)} = ${F(5,2)}</li><li>${F(5,2)} × ${F(2,5)} = ${F(10,10)} = 1</li></ol>`},
+  ]},
+  { id:'p-gcd', subj:'math', name:'ห.ร.ม. และ ค.ร.น.', qs:[
+    {t:'num', q:'ห.ร.ม. ของ 12 และ 18 คือเท่าใด', a:6,
+     h:'หาจำนวนที่มากที่สุดที่หารทั้งสองจำนวนลงตัว', s:'<ol><li>12 = 2 × 2 × 3</li><li>18 = 2 × 3 × 3</li><li>ตัวประกอบร่วม = 2 × 3 = 6</li></ol>'},
+    {t:'num', q:'ค.ร.น. ของ 4, 6 และ 8 คือเท่าใด', a:24,
+     s:'<ol><li>4 = 2², 6 = 2 × 3, 8 = 2³</li><li>เลือกกำลังสูงสุดของแต่ละตัว: 2³ × 3 = 24</li></ol>'},
+    {t:'num', q:'ไฟดวงแรกกะพริบทุก 6 วินาที ดวงที่สองกะพริบทุก 8 วินาที ถ้าเพิ่งกะพริบพร้อมกัน อีกกี่วินาทีจะกะพริบพร้อมกันอีกครั้ง', a:24, u:'วินาที',
+     h:'โจทย์ "พร้อมกันอีกครั้ง" ใช้ ค.ร.น.', s:'<ol><li>หาเวลาที่เป็นพหุคูณร่วมที่น้อยที่สุดของ 6 และ 8</li><li>ค.ร.น.(6, 8) = 24</li><li>จึงกะพริบพร้อมกันอีกครั้งใน 24 วินาที</li></ol>'},
+  ]},
+  { id:'p-percent', subj:'math', name:'ร้อยละ', qs:[
+    {t:'num', q:'25% ของ 80 เท่ากับเท่าใด', a:20,
+     s:`<ol><li>${F(25,100)} × 80 = 20</li></ol>`},
+    {t:'num', q:'เสื้อราคา 500 บาท ลดราคา 20% ต้องจ่ายเงินกี่บาท', a:400, u:'บาท',
+     s:`<ol><li>ส่วนลด = ${F(20,100)} × 500 = 100 บาท</li><li>จ่าย = 500 − 100 = 400 บาท</li></ol>`},
+    {t:'num', q:'สอบได้ 36 คะแนน จากคะแนนเต็ม 40 คิดเป็นร้อยละเท่าใด', a:90,
+     s:`<ol><li>${F(36,40)} × 100 = 90</li><li>คิดเป็นร้อยละ 90</li></ol>`},
+  ]},
+  { id:'p-geo', subj:'math', name:'พื้นที่และปริมาตร', qs:[
+    {t:'num', q:'สี่เหลี่ยมผืนผ้ากว้าง 6 ซม. ยาว 9 ซม. มีพื้นที่กี่ตารางเซนติเมตร', a:54, u:'ตร.ซม.',
+     s:'<ol><li>พื้นที่ = กว้าง × ยาว = 6 × 9 = 54 ตร.ซม.</li></ol>'},
+    {t:'num', q:'สามเหลี่ยมมีฐานยาว 10 ซม. สูง 7 ซม. มีพื้นที่กี่ตารางเซนติเมตร', a:35, u:'ตร.ซม.',
+     s:`<ol><li>พื้นที่ = ${F(1,2)} × ฐาน × สูง</li><li>= ${F(1,2)} × 10 × 7 = 35 ตร.ซม.</li></ol>`},
+    {t:'num', q:'กล่องทรงสี่เหลี่ยมมุมฉาก กว้าง 4 ซม. ยาว 5 ซม. สูง 3 ซม. มีปริมาตรกี่ลูกบาศก์เซนติเมตร', a:60, u:'ลบ.ซม.',
+     s:'<ol><li>ปริมาตร = กว้าง × ยาว × สูง = 4 × 5 × 3 = 60 ลบ.ซม.</li></ol>'},
+  ]},
+]},
+
+{ id:'lower-sec', group:'grade', name:'มัธยมศึกษาตอนต้น', tag:'ม.1 – ม.3', color:'#2d5bd8',
+  desc:'คณิต ม.ต้น ครบแกนหลัก และฟิสิกส์ในวิชาวิทยาศาสตร์',
+  topics:[
+  { id:'m-exp', subj:'math', name:'เลขยกกำลัง', qs:[
+    {t:'num', q:'2³ × 2⁴ = 2<sup>n</sup> แล้ว n มีค่าเท่าใด', a:7,
+     h:'ฐานเท่ากันคูณกัน ให้นำเลขชี้กำลังมาบวกกัน', s:'<ol><li>2³ × 2⁴ = 2³⁺⁴ = 2⁷</li><li>n = 7</li></ol>'},
+    {t:'num', q:'(3²)³ ÷ 3⁴ มีค่าเท่าใด', a:9,
+     s:'<ol><li>(3²)³ = 3⁶</li><li>3⁶ ÷ 3⁴ = 3² = 9</li></ol>'},
+    {t:'mc', q:'0.00045 เขียนในรูปสัญกรณ์วิทยาศาสตร์ได้ตรงกับข้อใด', c:['4.5 × 10⁻³','45 × 10⁻⁵','4.5 × 10⁻⁴','4.5 × 10⁴'], a:2,
+     h:'ตัวหน้าต้องอยู่ระหว่าง 1 ถึงน้อยกว่า 10', s:'<ol><li>เลื่อนจุดทศนิยมไปทางขวา 4 ตำแหน่ง ได้ 4.5</li><li>จึงได้ 4.5 × 10⁻⁴ (ข้อ 45 × 10⁻⁵ ค่าเท่ากัน แต่ไม่ใช่รูปสัญกรณ์วิทยาศาสตร์)</li></ol>'},
+  ]},
+  { id:'m-linear', subj:'math', name:'สมการเชิงเส้นตัวแปรเดียว', qs:[
+    {t:'num', q:'ถ้า 3x + 5 = 20 แล้ว x มีค่าเท่าใด', a:5,
+     s:'<ol><li>3x = 20 − 5 = 15</li><li>x = 15 ÷ 3 = 5</li></ol>'},
+    {t:'num', q:'ถ้า 2(x − 3) = x + 4 แล้ว x มีค่าเท่าใด', a:10,
+     s:'<ol><li>2x − 6 = x + 4</li><li>2x − x = 4 + 6</li><li>x = 10</li></ol>'},
+    {t:'num', q:'ปัจจุบันพ่ออายุเป็น 3 เท่าของลูก อีก 10 ปีพ่อจะมีอายุเป็น 2 เท่าของลูก ปัจจุบันลูกอายุกี่ปี', a:10, u:'ปี',
+     h:'ให้ลูกอายุ x ปี แล้วพ่ออายุ 3x ปี', s:'<ol><li>อีก 10 ปี: ลูก x + 10, พ่อ 3x + 10</li><li>3x + 10 = 2(x + 10)</li><li>3x + 10 = 2x + 20 → x = 10</li><li>ลูกอายุ 10 ปี (พ่อ 30 ปี)</li></ol>'},
+  ]},
+  { id:'m-pyth', subj:'math', name:'ทฤษฎีบทพีทาโกรัส', qs:[
+    {t:'num', q:'สามเหลี่ยมมุมฉากมีด้านประกอบมุมฉากยาว 6 และ 8 หน่วย ด้านตรงข้ามมุมฉากยาวกี่หน่วย', a:10, u:'หน่วย',
+     s:'<ol><li>c² = 6² + 8² = 36 + 64 = 100</li><li>c = 10</li></ol>'},
+    {t:'num', q:'บันไดยาว 13 ฟุต พิงกำแพง เท้าบันไดอยู่ห่างกำแพง 5 ฟุต ปลายบันไดสูงจากพื้นกี่ฟุต', a:12, u:'ฟุต',
+     s:'<ol><li>สูง² = 13² − 5² = 169 − 25 = 144</li><li>สูง = 12 ฟุต</li></ol>'},
+    {t:'mc', q:'ความยาวด้านชุดใดประกอบเป็นสามเหลี่ยมมุมฉากได้', c:['4, 5, 6','2, 3, 4','6, 7, 9','5, 12, 13'], a:3,
+     h:'ตรวจว่า ด้านสั้น² + ด้านสั้น² = ด้านยาวสุด² หรือไม่', s:'<ol><li>5² + 12² = 25 + 144 = 169 = 13²</li><li>ชุดอื่นไม่เป็นจริง เช่น 4² + 5² = 41 ≠ 36</li></ol>'},
+  ]},
+  { id:'m-factor', subj:'math', name:'การแยกตัวประกอบพหุนามดีกรีสอง', qs:[
+    {t:'mc', q:'x² + 5x + 6 แยกตัวประกอบได้ตรงกับข้อใด', c:['(x + 1)(x + 6)','(x + 2)(x + 3)','(x − 2)(x − 3)','(x + 5)(x + 1)'], a:1,
+     h:'หาสองจำนวนที่คูณกันได้ 6 บวกกันได้ 5', s:'<ol><li>2 × 3 = 6 และ 2 + 3 = 5</li><li>x² + 5x + 6 = (x + 2)(x + 3)</li></ol>'},
+    {t:'mc', q:'x² − 9 แยกตัวประกอบได้ตรงกับข้อใด', c:['(x − 3)²','(x − 9)(x + 1)','(x − 3)(x + 3)','(x + 3)²'], a:2,
+     s:'<ol><li>ผลต่างกำลังสอง: a² − b² = (a − b)(a + b)</li><li>x² − 3² = (x − 3)(x + 3)</li></ol>'},
+    {t:'num', q:'ผลบวกของคำตอบทั้งหมดของสมการ x² − 7x + 10 = 0 เท่ากับเท่าใด', a:7,
+     s:'<ol><li>x² − 7x + 10 = (x − 2)(x − 5) = 0</li><li>x = 2 หรือ x = 5</li><li>ผลบวก = 7</li></ol>'},
+  ]},
+  { id:'m-stat', subj:'math', name:'สถิติเบื้องต้น', qs:[
+    {t:'num', q:'ค่าเฉลี่ยเลขคณิตของ 4, 6, 8, 10, 12 คือเท่าใด', a:8,
+     s:'<ol><li>ผลรวม = 40, มี 5 จำนวน</li><li>ค่าเฉลี่ย = 40 ÷ 5 = 8</li></ol>'},
+    {t:'num', q:'มัธยฐานของข้อมูล 3, 9, 1, 7, 5 คือเท่าใด', a:5,
+     h:'เรียงข้อมูลก่อนเสมอ', s:'<ol><li>เรียง: 1, 3, 5, 7, 9</li><li>ตัวกลาง = 5</li></ol>'},
+    {t:'num', q:'ฐานนิยมของข้อมูล 2, 3, 3, 5, 7, 3, 5 คือเท่าใด', a:3,
+     s:'<ol><li>3 ปรากฏ 3 ครั้ง มากที่สุด</li><li>ฐานนิยม = 3</li></ol>'},
+  ]},
+  { id:'mp-speed', subj:'phys', name:'การเคลื่อนที่ อัตราเร็ว ความเร็ว', qs:[
+    {t:'num', q:'รถยนต์วิ่งได้ระยะทาง 120 กิโลเมตร ใช้เวลา 2 ชั่วโมง อัตราเร็วเฉลี่ยกี่กิโลเมตรต่อชั่วโมง', a:60, u:'km/h',
+     s:'<ol><li>อัตราเร็วเฉลี่ย = ระยะทาง ÷ เวลา</li><li>= 120 ÷ 2 = 60 km/h</li></ol>'},
+    {t:'num', q:'72 กิโลเมตรต่อชั่วโมง เท่ากับกี่เมตรต่อวินาที', a:20, u:'m/s',
+     h:'คูณด้วย 1000/3600 หรือ 5/18', s:`<ol><li>72 × ${F(1000,3600)} = 72 × ${F(5,18)}</li><li>= 20 m/s</li></ol>`},
+    {t:'mc', q:'นักเรียนเดินไปทางตะวันออก 30 m แล้วเดินกลับทางตะวันตก 10 m ใช้เวลารวม 10 s ความเร็วเฉลี่ยเป็นเท่าใด', c:['4 m/s ทิศตะวันออก','2 m/s ทิศตะวันตก','2 m/s ทิศตะวันออก','3 m/s ทิศตะวันออก'], a:2,
+     h:'ความเร็วใช้การกระจัด ไม่ใช่ระยะทาง', s:'<ol><li>การกระจัด = 30 − 10 = 20 m ไปทางตะวันออก</li><li>ความเร็วเฉลี่ย = 20 ÷ 10 = 2 m/s ทิศตะวันออก</li><li>(ส่วนอัตราเร็วเฉลี่ย = 40 ÷ 10 = 4 m/s)</li></ol>'},
+  ]},
+  { id:'mp-pressure', subj:'phys', name:'ความหนาแน่นและความดัน', qs:[
+    {t:'num', q:'วัตถุมวล 200 g ปริมาตร 50 cm³ มีความหนาแน่นกี่ g/cm³', a:4, u:'g/cm³',
+     s:'<ol><li>ρ = m ÷ V = 200 ÷ 50 = 4 g/cm³</li></ol>'},
+    {t:'num', q:'ความดันของน้ำที่ความลึก 5 m มีค่ากี่ปาสคาล (ρ<sub>น้ำ</sub> = 1000 kg/m³, g = 10 m/s², ไม่คิดความดันอากาศ)', a:50000, u:'Pa',
+     s:'<ol><li>P = ρgh</li><li>= 1000 × 10 × 5 = 50,000 Pa</li></ol>'},
+    {t:'num', q:'แรง 600 N กดลงบนพื้นที่ 0.2 m² ความดันเป็นกี่ปาสคาล', a:3000, u:'Pa',
+     s:'<ol><li>P = F ÷ A = 600 ÷ 0.2 = 3,000 Pa</li></ol>'},
+  ]},
+  { id:'mp-elec', subj:'phys', name:'ไฟฟ้า กฎของโอห์ม', qs:[
+    {t:'num', q:'ตัวต้านทาน 4 Ω ต่อกับความต่างศักย์ 12 V มีกระแสไหลกี่แอมแปร์', a:3, u:'A',
+     s:'<ol><li>I = V ÷ R = 12 ÷ 4 = 3 A</li></ol>'},
+    {t:'num', q:'ตัวต้านทาน 2 Ω และ 3 Ω ต่อแบบอนุกรมกับแหล่งกำเนิด 10 V กระแสในวงจรเป็นกี่แอมแปร์', a:2, u:'A',
+     s:'<ol><li>R<sub>รวม</sub> = 2 + 3 = 5 Ω</li><li>I = 10 ÷ 5 = 2 A</li></ol>'},
+    {t:'num', q:'ตัวต้านทาน 6 Ω และ 3 Ω ต่อแบบขนาน ความต้านทานรวมเป็นกี่โอห์ม', a:2, u:'Ω',
+     s:`<ol><li>${F(1,'R')} = ${F(1,6)} + ${F(1,3)} = ${F(3,6)} = ${F(1,2)}</li><li>R = 2 Ω</li></ol>`},
+    {t:'num', q:'หลอดไฟ 100 W เปิดวันละ 5 ชั่วโมง เป็นเวลา 30 วัน ใช้พลังงานไฟฟ้ากี่หน่วย (kWh)', a:15, u:'หน่วย',
+     s:'<ol><li>100 W = 0.1 kW</li><li>เวลา = 5 × 30 = 150 h</li><li>พลังงาน = 0.1 × 150 = 15 หน่วย</li></ol>'},
+  ]},
+  { id:'mp-work', subj:'phys', name:'งานและพลังงาน', qs:[
+    {t:'num', q:'ออกแรง 50 N ลากวัตถุไปตามทิศของแรงเป็นระยะ 4 m งานที่ทำเป็นกี่จูล', a:200, u:'J',
+     s:'<ol><li>W = F × s = 50 × 4 = 200 J</li></ol>'},
+    {t:'num', q:'วัตถุมวล 2 kg อยู่สูงจากพื้น 5 m มีพลังงานศักย์โน้มถ่วงกี่จูล (g = 10 m/s²)', a:100, u:'J',
+     s:'<ol><li>E<sub>p</sub> = mgh = 2 × 10 × 5 = 100 J</li></ol>'},
+    {t:'num', q:'วัตถุมวล 2 kg เคลื่อนที่ด้วยอัตราเร็ว 3 m/s มีพลังงานจลน์กี่จูล', a:9, u:'J',
+     s:`<ol><li>E<sub>k</sub> = ${F(1,2)}mv² = ${F(1,2)} × 2 × 3² = 9 J</li></ol>`},
+  ]},
+]},
+
+{ id:'upper-sec', group:'grade', name:'มัธยมศึกษาตอนปลาย', tag:'ม.4 – ม.6', color:'#6a42c2',
+  desc:'คณิตพื้นฐานและเพิ่มเติม ฟิสิกส์ ม.ปลาย ตามลำดับบทเรียน',
+  topics:[
+  { id:'h-set', subj:'math', name:'เซต', qs:[
+    {t:'num', q:'A = {1, 2, 3} จำนวนสับเซตทั้งหมดของ A มีกี่เซต', a:8,
+     s:'<ol><li>จำนวนสับเซต = 2<sup>n(A)</sup> = 2³ = 8</li></ol>'},
+    {t:'num', q:'n(A) = 20, n(B) = 15, n(A ∩ B) = 5 แล้ว n(A ∪ B) เท่ากับเท่าใด', a:30,
+     s:'<ol><li>n(A ∪ B) = n(A) + n(B) − n(A ∩ B)</li><li>= 20 + 15 − 5 = 30</li></ol>'},
+    {t:'num', q:'ห้องเรียนมี 40 คน ชอบคณิต 25 คน ชอบฟิสิกส์ 20 คน ชอบทั้งสองวิชา 10 คน มีกี่คนที่ไม่ชอบทั้งสองวิชา', a:5, u:'คน',
+     h:'วาดแผนภาพเวนน์', s:'<ol><li>ชอบอย่างน้อยหนึ่งวิชา = 25 + 20 − 10 = 35</li><li>ไม่ชอบทั้งสอง = 40 − 35 = 5 คน</li></ol>'},
+  ]},
+  { id:'h-func', subj:'math', name:'ฟังก์ชัน', qs:[
+    {t:'num', q:'f(x) = 2x + 3 แล้ว f(4) เท่ากับเท่าใด', a:11,
+     s:'<ol><li>f(4) = 2(4) + 3 = 11</li></ol>'},
+    {t:'num', q:'f(x) = x² − 1 และ g(x) = x + 2 แล้ว (f ∘ g)(1) เท่ากับเท่าใด', a:8,
+     h:'หา g(1) ก่อน แล้วนำไปแทนใน f', s:'<ol><li>g(1) = 3</li><li>f(3) = 9 − 1 = 8</li></ol>'},
+    {t:'mc', q:'f(x) = 3x − 6 แล้ว f⁻¹(x) คือข้อใด', c:[F('x − 6',3),'3x + 6',F('x + 6',3),F('x',3)+' − 6'], a:2,
+     s:`<ol><li>ให้ y = 3x − 6 แล้วสลับ x กับ y: x = 3y − 6</li><li>y = ${F('x + 6',3)}</li></ol>`},
+  ]},
+  { id:'h-log', subj:'math', name:'เลขยกกำลังและลอการิทึม', qs:[
+    {t:'num', q:'log₂ 32 มีค่าเท่าใด', a:5,
+     s:'<ol><li>2⁵ = 32</li><li>log₂ 32 = 5</li></ol>'},
+    {t:'num', q:'log 2 + log 50 มีค่าเท่าใด (log ฐาน 10)', a:2,
+     s:'<ol><li>log 2 + log 50 = log(2 × 50) = log 100</li><li>= 2</li></ol>'},
+    {t:'num', q:'ถ้า 2<sup>x+1</sup> = 16 แล้ว x มีค่าเท่าใด', a:3,
+     s:'<ol><li>16 = 2⁴</li><li>x + 1 = 4 → x = 3</li></ol>'},
+  ]},
+  { id:'h-trig', subj:'math', name:'ตรีโกณมิติ', qs:[
+    {t:'mc', q:'sin 30° มีค่าเท่าใด', c:[F('√3',2),F(1,2),F('√2',2),'1'], a:1,
+     s:`<ol><li>จากสามเหลี่ยม 30°-60°-90° ด้าน 1 : √3 : 2</li><li>sin 30° = ${F('ข้าม','ฉาก')} = ${F(1,2)}</li></ol>`},
+    {t:'mc', q:`ถ้า sin θ = ${F(3,5)} และ θ อยู่ในจตุภาคที่ 1 แล้ว tan θ เท่ากับเท่าใด`, c:[F(4,5),F(4,3),F(3,4),F(5,3)], a:2,
+     s:`<ol><li>cos θ = √(1 − ${F(9,25)}) = ${F(4,5)}</li><li>tan θ = ${F('sin θ','cos θ')} = ${F(3,4)}</li></ol>`},
+    {t:'mc', q:'cos 120° มีค่าเท่าใด', c:[F(1,2),'−'+F(1,2),'−'+F('√3',2),F('√3',2)], a:1,
+     h:'120° อยู่ในจตุภาคที่ 2 ซึ่ง cos เป็นลบ', s:`<ol><li>cos 120° = −cos 60°</li><li>= −${F(1,2)}</li></ol>`},
+  ]},
+  { id:'h-seq', subj:'math', name:'ลำดับและอนุกรม', qs:[
+    {t:'num', q:'ลำดับเลขคณิต 3, 7, 11, … พจน์ที่ 20 คือเท่าใด', a:79,
+     s:'<ol><li>a₁ = 3, d = 4</li><li>a₂₀ = 3 + 19(4) = 79</li></ol>'},
+    {t:'num', q:'1 + 2 + 3 + … + 100 มีค่าเท่าใด', a:5050,
+     s:`<ol><li>S<sub>n</sub> = ${F('n(n + 1)',2)}</li><li>= ${F('100 × 101',2)} = 5,050</li></ol>`},
+    {t:'num', q:'ลำดับเรขาคณิต 2, 6, 18, … พจน์ที่ 6 คือเท่าใด', a:486,
+     s:'<ol><li>a₁ = 2, r = 3</li><li>a₆ = 2 × 3⁵ = 2 × 243 = 486</li></ol>'},
+  ]},
+  { id:'h-prob', subj:'math', name:'หลักการนับและความน่าจะเป็น', qs:[
+    {t:'mc', q:'โยนเหรียญ 2 เหรียญ ความน่าจะเป็นที่ขึ้นหัวทั้งสองเหรียญเท่ากับเท่าใด', c:[F(1,2),F(1,3),F(1,4),F(3,4)], a:2,
+     s:`<ol><li>ผลลัพธ์ทั้งหมด: HH, HT, TH, TT = 4 แบบ</li><li>P(HH) = ${F(1,4)}</li></ol>`},
+    {t:'num', q:'นำตัวอักษรจากคำว่า BOOK มาเรียงสับเปลี่ยนได้ทั้งหมดกี่แบบ', a:12, u:'แบบ',
+     h:'มีตัว O ซ้ำ 2 ตัว', s:`<ol><li>${F('4!','2!')} = ${F(24,2)} = 12 แบบ</li></ol>`},
+    {t:'num', q:'เลือกกรรมการ 3 คน จากผู้สมัคร 7 คน ได้กี่วิธี', a:35, u:'วิธี',
+     s:`<ol><li>C(7, 3) = ${F('7 × 6 × 5','3 × 2 × 1')} = 35</li></ol>`},
+    {t:'mc', q:'ทอยลูกเต๋า 2 ลูก ความน่าจะเป็นที่ผลรวมแต้มเท่ากับ 7', c:[F(1,12),F(1,6),F(5,36),F(7,36)], a:1,
+     s:`<ol><li>คู่ที่รวมได้ 7: (1,6),(2,5),(3,4),(4,3),(5,2),(6,1) = 6 แบบ</li><li>P = ${F(6,36)} = ${F(1,6)}</li></ol>`},
+  ]},
+  { id:'h-calc', subj:'math', name:'แคลคูลัสเบื้องต้น', qs:[
+    {t:'num', q:'f(x) = x³ แล้ว f′(2) เท่ากับเท่าใด', a:12,
+     s:'<ol><li>f′(x) = 3x²</li><li>f′(2) = 3(4) = 12</li></ol>'},
+    {t:'num', q:`lim<sub>x→2</sub> ${F('x² − 4','x − 2')} มีค่าเท่าใด`, a:4,
+     s:`<ol><li>${F('x² − 4','x − 2')} = ${F('(x − 2)(x + 2)','x − 2')} = x + 2 (เมื่อ x ≠ 2)</li><li>ลิมิต = 2 + 2 = 4</li></ol>`},
+    {t:'num', q:'∫₀² 3x² dx มีค่าเท่าใด', a:8,
+     s:'<ol><li>∫3x² dx = x³</li><li>[x³]₀² = 8 − 0 = 8</li></ol>'},
+  ]},
+  { id:'hp-kin', subj:'phys', name:'การเคลื่อนที่แนวตรง', qs:[
+    {t:'num', q:'รถเริ่มเคลื่อนที่จากหยุดนิ่งด้วยความเร่ง 2 m/s² เมื่อเวลาผ่านไป 5 s รถมีความเร็วกี่ m/s', a:10, u:'m/s',
+     s:'<ol><li>v = u + at = 0 + 2(5) = 10 m/s</li></ol>'},
+    {t:'num', q:'จากข้อที่แล้ว ภายใน 5 s รถเคลื่อนที่ได้ระยะทางกี่เมตร', a:25, u:'m',
+     s:`<ol><li>s = ut + ${F(1,2)}at²</li><li>= 0 + ${F(1,2)}(2)(25) = 25 m</li></ol>`},
+    {t:'num', q:'ปล่อยวัตถุให้ตกอย่างอิสระจากที่สูง 45 m ใช้เวลากี่วินาทีจึงถึงพื้น (g = 10 m/s²)', a:3, u:'s',
+     s:`<ol><li>s = ${F(1,2)}gt² → 45 = 5t²</li><li>t² = 9 → t = 3 s</li></ol>`},
+  ]},
+  { id:'hp-newton', subj:'phys', name:'กฎการเคลื่อนที่ของนิวตัน', qs:[
+    {t:'num', q:'แรงลัพธ์ 20 N กระทำต่อวัตถุมวล 4 kg วัตถุมีความเร่งกี่ m/s²', a:5, u:'m/s²',
+     s:'<ol><li>a = ΣF ÷ m = 20 ÷ 4 = 5 m/s²</li></ol>'},
+    {t:'num', q:'ดึงกล่องมวล 2 kg ด้วยแรง 10 N ในแนวราบ มีแรงเสียดทาน 4 N กล่องมีความเร่งกี่ m/s²', a:3, u:'m/s²',
+     s:'<ol><li>ΣF = 10 − 4 = 6 N</li><li>a = 6 ÷ 2 = 3 m/s²</li></ol>'},
+    {t:'num', q:'คนมวล 60 kg ยืนในลิฟต์ที่กำลังเคลื่อนที่ขึ้นด้วยความเร่ง 2 m/s² พื้นลิฟต์ดันคนด้วยแรงกี่นิวตัน (g = 10 m/s²)', a:720, u:'N',
+     h:'เขียน ΣF = ma โดยให้ทิศขึ้นเป็นบวก', s:'<ol><li>N − mg = ma</li><li>N = m(g + a) = 60(10 + 2) = 720 N</li></ol>'},
+  ]},
+  { id:'hp-mom', subj:'phys', name:'โมเมนตัมและการชน', qs:[
+    {t:'num', q:'วัตถุมวล 3 kg เคลื่อนที่ด้วยความเร็ว 4 m/s มีโมเมนตัมกี่ kg·m/s', a:12, u:'kg·m/s',
+     s:'<ol><li>p = mv = 3 × 4 = 12 kg·m/s</li></ol>'},
+    {t:'num', q:'รถทดลองมวล 2 kg วิ่งด้วยความเร็ว 6 m/s ชนรถมวล 1 kg ที่หยุดนิ่งแล้วติดไปด้วยกัน ความเร็วหลังชนกี่ m/s', a:4, u:'m/s',
+     s:'<ol><li>โมเมนตัมอนุรักษ์: 2(6) + 1(0) = (2 + 1)v</li><li>v = 12 ÷ 3 = 4 m/s</li></ol>'},
+    {t:'num', q:'เตะลูกบอลมวล 0.5 kg จากหยุดนิ่งให้มีความเร็ว 20 m/s เท้าสัมผัสลูกบอล 0.1 s แรงเฉลี่ยที่กระทำกี่นิวตัน', a:100, u:'N',
+     s:`<ol><li>F = ${F('Δp','Δt')} = ${F('0.5 × 20','0.1')}</li><li>= 100 N</li></ol>`},
+  ]},
+  { id:'hp-wave', subj:'phys', name:'คลื่นและเสียง', qs:[
+    {t:'num', q:'คลื่นความถี่ 50 Hz ความยาวคลื่น 2 m มีอัตราเร็วกี่ m/s', a:100, u:'m/s',
+     s:'<ol><li>v = fλ = 50 × 2 = 100 m/s</li></ol>'},
+    {t:'num', q:'คลื่นมีคาบ 0.2 s มีความถี่กี่เฮิรตซ์', a:5, u:'Hz',
+     s:`<ol><li>f = ${F(1,'T')} = ${F(1,'0.2')} = 5 Hz</li></ol>`},
+    {t:'num', q:'ตะโกนหน้าผนัง ได้ยินเสียงสะท้อนหลังตะโกน 2 s ถ้าเสียงในอากาศมีอัตราเร็ว 340 m/s ผนังอยู่ห่างกี่เมตร', a:340, u:'m',
+     h:'เสียงเดินทางไปและกลับ', s:`<ol><li>ระยะไป-กลับ = 340 × 2 = 680 m</li><li>ระยะถึงผนัง = ${F(680,2)} = 340 m</li></ol>`},
+  ]},
+  { id:'hp-elec', subj:'phys', name:'ไฟฟ้าสถิตและไฟฟ้ากระแส', qs:[
+    {t:'mc', q:'ถ้าระยะห่างระหว่างประจุสองตัวเพิ่มเป็น 2 เท่า แรงระหว่างประจุจะเป็นกี่เท่าของเดิม', c:['2 เท่า',F(1,2)+' เท่า',F(1,4)+' เท่า','4 เท่า'], a:2,
+     s:`<ol><li>กฎของคูลอมบ์: F ∝ ${F(1,'r²')}</li><li>r เป็น 2 เท่า → F เป็น ${F(1,'2²')} = ${F(1,4)} เท่า</li></ol>`},
+    {t:'num', q:'เตารีด 1100 W ใช้กับไฟ 220 V มีความต้านทานกี่โอห์ม', a:44, u:'Ω',
+     s:`<ol><li>P = ${F('V²','R')} → R = ${F('V²','P')}</li><li>R = ${F('220²',1100)} = ${F('48,400','1,100')} = 44 Ω</li></ol>`},
+    {t:'num', q:'ประจุ 2 C ไหลผ่านลวดในเวลา 4 s กระแสไฟฟ้ากี่แอมแปร์', a:0.5, u:'A',
+     s:`<ol><li>I = ${F('Q','t')} = ${F(2,4)} = 0.5 A</li></ol>`},
+  ]},
+]},
+
+{ id:'exam-m1', group:'exam', name:'เตรียมสอบเข้า ม.1', tag:'โรงเรียนดัง / ห้องพิเศษ', color:'#e0a100',
+  desc:'โจทย์ประยุกต์ แบบรูป โจทย์ปัญหา และเรขาคณิตแนวสอบเข้า',
+  topics:[
+  { id:'e1-num', subj:'math', name:'จำนวนและการคิดคำนวณ', qs:[
+    {t:'num', q:'1 + 3 + 5 + 7 + … + 19 มีค่าเท่าใด', a:100,
+     h:'ผลบวกจำนวนคี่ n ตัวแรก = n²', s:'<ol><li>มีจำนวนคี่ตั้งแต่ 1 ถึง 19 อยู่ 10 ตัว</li><li>ผลบวก = 10² = 100</li></ol>'},
+    {t:'num', q:'หลักหน่วยของ 7²⁰ คือเลขใด', a:1,
+     h:'ดูหลักหน่วยของ 7¹, 7², 7³, 7⁴ … แล้วหาแบบรูป', s:'<ol><li>หลักหน่วยวนเป็นรอบ: 7, 9, 3, 1 (รอบละ 4)</li><li>20 ÷ 4 เหลือเศษ 0 → ตรงกับตัวที่ 4 ของรอบ</li><li>หลักหน่วย = 1</li></ol>'},
+    {t:'num', q:'จำนวนสองจำนวนมี ห.ร.ม. = 6 และ ค.ร.น. = 72 ถ้าจำนวนหนึ่งคือ 18 อีกจำนวนคือเท่าใด', a:24,
+     h:'ห.ร.ม. × ค.ร.น. = ผลคูณของสองจำนวน', s:'<ol><li>18 × ข = 6 × 72 = 432</li><li>ข = 432 ÷ 18 = 24</li></ol>'},
+  ]},
+  { id:'e1-word', subj:'math', name:'โจทย์ปัญหา', qs:[
+    {t:'num', q:'แม่อายุมากกว่าลูก 28 ปี อายุรวมกันเป็น 44 ปี ลูกอายุกี่ปี', a:8, u:'ปี',
+     s:'<ol><li>ให้ลูกอายุ x ปี แม่อายุ x + 28</li><li>2x + 28 = 44 → x = 8</li></ol>'},
+    {t:'num', q:'ก ทำงานชิ้นหนึ่งคนเดียวเสร็จใน 6 วัน ข ทำคนเดียวเสร็จใน 3 วัน ถ้าช่วยกันทำจะเสร็จในกี่วัน', a:2, u:'วัน',
+     h:'หางานที่ทำได้ใน 1 วันของแต่ละคน', s:`<ol><li>1 วัน ก ทำได้ ${F(1,6)} ข ทำได้ ${F(1,3)}</li><li>รวม ${F(1,6)} + ${F(2,6)} = ${F(3,6)} = ${F(1,2)} ของงาน</li><li>ใช้เวลา 2 วัน</li></ol>`},
+    {t:'num', q:'ซื้อสินค้ามา 800 บาท ขายไป 1,000 บาท ได้กำไรร้อยละเท่าใด', a:25,
+     h:'ร้อยละของกำไรคิดจากราคาทุน', s:`<ol><li>กำไร = 200 บาท</li><li>${F(200,800)} × 100 = 25</li><li>กำไรร้อยละ 25</li></ol>`},
+  ]},
+  { id:'e1-geo', subj:'math', name:'เรขาคณิต', qs:[
+    {t:'num', q:'สามเหลี่ยมมีมุมสองมุมขนาด 50° และ 60° มุมที่เหลือมีขนาดกี่องศา', a:70, u:'องศา',
+     s:'<ol><li>มุมภายในสามเหลี่ยมรวม 180°</li><li>180 − 50 − 60 = 70°</li></ol>'},
+    {t:'num', q:'ผลบวกมุมภายในของรูปหกเหลี่ยมเท่ากับกี่องศา', a:720, u:'องศา',
+     s:'<ol><li>ผลบวกมุมภายใน = (n − 2) × 180°</li><li>= 4 × 180 = 720°</li></ol>'},
+    {t:'num', q:`วงกลมรัศมี 7 ซม. มีพื้นที่กี่ตารางเซนติเมตร (ใช้ π ≈ ${F(22,7)})`, a:154, u:'ตร.ซม.',
+     s:`<ol><li>พื้นที่ = πr² = ${F(22,7)} × 7 × 7</li><li>= 22 × 7 = 154 ตร.ซม.</li></ol>`},
+  ]},
+  { id:'e1-pattern', subj:'math', name:'แบบรูปและความสัมพันธ์', qs:[
+    {t:'num', q:'2, 5, 10, 17, 26, … จำนวนถัดไปคือเท่าใด', a:37,
+     h:'ดูผลต่างระหว่างพจน์ หรือลองเทียบกับ 1², 2², 3², …', s:'<ol><li>ผลต่าง 3, 5, 7, 9 → ถัดไปเพิ่ม 11</li><li>26 + 11 = 37 (หรือ n² + 1 = 6² + 1)</li></ol>'},
+    {t:'num', q:'1, 1, 2, 3, 5, 8, … จำนวนถัดไปคือเท่าใด', a:13,
+     s:'<ol><li>แต่ละพจน์ = ผลบวกสองพจน์ก่อนหน้า</li><li>5 + 8 = 13</li></ol>'},
+    {t:'num', q:'3, 6, 12, 24, … จำนวนถัดไปคือเท่าใด', a:48,
+     s:'<ol><li>คูณ 2 ทุกครั้ง</li><li>24 × 2 = 48</li></ol>'},
+  ]},
+]},
+
+{ id:'exam-m4', group:'exam', name:'เตรียมสอบเข้า ม.4', tag:'คณิต + วิทย์ (ฟิสิกส์)', color:'#d9642b',
+  desc:'รวมโจทย์ ม.ต้น ระดับสอบคัดเลือก พีชคณิต เรขาคณิต สถิติ ฟิสิกส์',
+  topics:[
+  { id:'e4-alg', subj:'math', name:'พีชคณิตและสมการ', qs:[
+    {t:'num', q:'ถ้า x + y = 10 และ x − y = 4 แล้ว xy มีค่าเท่าใด', a:21,
+     s:'<ol><li>บวกสองสมการ: 2x = 14 → x = 7</li><li>y = 3</li><li>xy = 21</li></ol>'},
+    {t:'num', q:`ถ้า x + ${F(1,'x')} = 3 แล้ว x² + ${F(1,'x²')} มีค่าเท่าใด`, a:7,
+     h:'ยกกำลังสองทั้งสองข้าง', s:`<ol><li>(x + ${F(1,'x')})² = x² + 2 + ${F(1,'x²')} = 9</li><li>x² + ${F(1,'x²')} = 9 − 2 = 7</li></ol>`},
+    {t:'num', q:'สมการ x² − 5x + k = 0 มีคำตอบเป็นจำนวนจริงซ้ำกัน k มีค่าเท่าใด', a:6.25,
+     h:'รากซ้ำเมื่อ b² − 4ac = 0', s:`<ol><li>(−5)² − 4(1)(k) = 0</li><li>25 = 4k → k = ${F(25,4)} = 6.25</li></ol>`},
+  ]},
+  { id:'e4-geo', subj:'math', name:'เรขาคณิตและอัตราส่วนตรีโกณมิติ', qs:[
+    {t:'num', q:'สามเหลี่ยมสองรูปคล้ายกัน อัตราส่วนด้านที่สมนัยกันเป็น 3 : 5 ถ้ารูปเล็กมีพื้นที่ 18 ตร.หน่วย รูปใหญ่มีพื้นที่กี่ตร.หน่วย', a:50,
+     h:'อัตราส่วนพื้นที่ = (อัตราส่วนด้าน)²', s:`<ol><li>อัตราส่วนพื้นที่ = 9 : 25</li><li>${F(18,'A')} = ${F(9,25)} → A = 50</li></ol>`},
+    {t:'mc', q:'มุมในครึ่งวงกลม (มุมที่รองรับด้วยเส้นผ่านศูนย์กลาง) มีขนาดเท่าใด', c:['45°','60°','90°','180°'], a:2,
+     s:'<ol><li>มุมในครึ่งวงกลมเป็นมุมฉากเสมอ = 90°</li><li>เพราะมุมที่จุดศูนย์กลางคือ 180° และมุมในส่วนโค้งเป็นครึ่งหนึ่ง</li></ol>'},
+    {t:'num', q:'บันไดยาว 10 m พิงกำแพง ทำมุม 30° กับพื้นราบ ปลายบันไดสูงจากพื้นกี่เมตร', a:5, u:'m',
+     s:`<ol><li>สูง = 10 × sin 30°</li><li>= 10 × ${F(1,2)} = 5 m</li></ol>`},
+  ]},
+  { id:'e4-ps', subj:'math', name:'สถิติและความน่าจะเป็น', qs:[
+    {t:'mc', q:'ในถุงมีลูกบอลสีแดง 3 ลูก สีน้ำเงิน 5 ลูก หยิบ 1 ลูก ความน่าจะเป็นที่ได้สีแดง', c:[F(3,5),F(3,8),F(5,8),F(1,3)], a:1,
+     s:`<ol><li>ลูกบอลทั้งหมด 8 ลูก แดง 3 ลูก</li><li>P(แดง) = ${F(3,8)}</li></ol>`},
+    {t:'num', q:'ข้อมูล 5 จำนวนมีค่าเฉลี่ย 12 เพิ่มข้อมูลอีก 1 จำนวน ค่าเฉลี่ยกลายเป็น 13 จำนวนที่เพิ่มคือเท่าใด', a:18,
+     s:'<ol><li>ผลรวมเดิม = 5 × 12 = 60</li><li>ผลรวมใหม่ = 6 × 13 = 78</li><li>จำนวนที่เพิ่ม = 78 − 60 = 18</li></ol>'},
+    {t:'mc', q:'ทอยลูกเต๋า 1 ลูก ความน่าจะเป็นที่ได้แต้มเป็นจำนวนเฉพาะ', c:[F(1,3),F(2,3),F(1,2),F(1,6)], a:2,
+     h:'1 ไม่ใช่จำนวนเฉพาะ', s:`<ol><li>จำนวนเฉพาะ: 2, 3, 5 = 3 แบบ</li><li>P = ${F(3,6)} = ${F(1,2)}</li></ol>`},
+  ]},
+  { id:'e4-phy', subj:'phys', name:'ฟิสิกส์ ม.ต้น แนวสอบเข้า', qs:[
+    {t:'num', q:'วัตถุมวล 5 kg มีน้ำหนักกี่นิวตัน (g = 10 m/s²)', a:50, u:'N',
+     s:'<ol><li>W = mg = 5 × 10 = 50 N</li></ol>'},
+    {t:'num', q:'เครื่องปรับอากาศ 2,000 W เปิดวันละ 3 ชั่วโมง ค่าไฟหน่วยละ 4 บาท วันหนึ่งเสียค่าไฟกี่บาท', a:24, u:'บาท',
+     s:'<ol><li>พลังงาน = 2 kW × 3 h = 6 หน่วย</li><li>ค่าไฟ = 6 × 4 = 24 บาท</li></ol>'},
+    {t:'num', q:'กระดานหกยาวสมดุล เด็กมวล 30 kg นั่งห่างจุดหมุน 2 m เด็กมวล 40 kg ต้องนั่งห่างจุดหมุนกี่เมตรจึงสมดุล', a:1.5, u:'m',
+     h:'โมเมนต์ทวน = โมเมนต์ตาม', s:'<ol><li>30 × 2 = 40 × d</li><li>d = 60 ÷ 40 = 1.5 m</li></ol>'},
+  ]},
+  { id:'e4-challenge', subj:'math', name:'ชุดท้าทาย สอบเข้า ม.4', qs:[
+    {t:'num', q:'ถ้า a + b = 5 และ ab = 3 แล้ว a³ + b³ มีค่าเท่าใด', a:80,
+     h:'a³ + b³ = (a + b)³ − 3ab(a + b)', s:'<ol><li>(a + b)³ = 125</li><li>3ab(a + b) = 3(3)(5) = 45</li><li>a³ + b³ = 125 − 45 = 80</li></ol>'},
+    {t:'num', q:'จำนวนเต็มบวกที่น้อยกว่า 100 ที่หารด้วย 3 หรือ 5 ลงตัว มีกี่จำนวน', a:46,
+     h:'ใช้หลักการเพิ่มเข้า-ตัดออก', s:'<ol><li>หาร 3 ลงตัว: 33 จำนวน (3 ถึง 99)</li><li>หาร 5 ลงตัว: 19 จำนวน (5 ถึง 95)</li><li>หาร 15 ลงตัว: 6 จำนวน</li><li>33 + 19 − 6 = 46</li></ol>'},
+  ]},
+]},
+
+{ id:'alevel-m1', group:'exam', name:'A-Level คณิตศาสตร์ประยุกต์ 1', tag:'สายวิทย์', color:'#2d5bd8',
+  desc:'ฟังก์ชัน แคลคูลัส เวกเตอร์ จำนวนเชิงซ้อน เมทริกซ์ สถิติ (ปรนัย + เติมคำตอบ)',
+  topics:[
+  { id:'a1-explog', subj:'math', name:'เอกซ์โพเนนเชียลและลอการิทึม', qs:[
+    {t:'num', q:'ถ้า log₃(x − 1) + log₃(x + 1) = 1 แล้ว x มีค่าเท่าใด', a:2,
+     h:'รวม log แล้วอย่าลืมตรวจโดเมน', s:'<ol><li>log₃[(x − 1)(x + 1)] = 1 → x² − 1 = 3</li><li>x = ±2</li><li>ต้องมี x > 1 จึงได้ x = 2</li></ol>'},
+    {t:'num', q:'ผลบวกของคำตอบทั้งหมดของสมการ 4<sup>x</sup> − 6·2<sup>x</sup> + 8 = 0', a:3,
+     h:'ให้ A = 2ˣ', s:'<ol><li>A² − 6A + 8 = 0 → (A − 2)(A − 4) = 0</li><li>2ˣ = 2 → x = 1, 2ˣ = 4 → x = 2</li><li>ผลบวก = 3</li></ol>'},
+    {t:'mc', q:`โดเมนของ f(x) = ${F('√(x − 2)','x − 5')} คือข้อใด`, c:['(2, ∞)','[2, 5)','[2, ∞) − {5}','(5, ∞)','ℝ − {5}'], a:2,
+     s:'<ol><li>ใต้รากต้องไม่ติดลบ: x ≥ 2</li><li>ตัวส่วนต้องไม่เป็นศูนย์: x ≠ 5</li><li>โดเมน = [2, ∞) − {5}</li></ol>'},
+  ]},
+  { id:'a1-calc', subj:'math', name:'แคลคูลัส', qs:[
+    {t:'num', q:'f(x) = x³ − 3x² + 4 มีค่าต่ำสุดสัมพัทธ์เท่ากับเท่าใด', a:0,
+     s:'<ol><li>f′(x) = 3x² − 6x = 3x(x − 2) = 0 → x = 0, 2</li><li>f″(x) = 6x − 6, f″(2) = 6 > 0 → ต่ำสุดสัมพัทธ์ที่ x = 2</li><li>f(2) = 8 − 12 + 4 = 0</li></ol>'},
+    {t:'mc', q:'พื้นที่ที่ปิดล้อมด้วยกราฟ y = x² และ y = 2x เท่ากับกี่ตารางหน่วย', c:[F(2,3),'1',F(4,3),'2',F(8,3)], a:2,
+     s:`<ol><li>จุดตัด: x² = 2x → x = 0, 2</li><li>∫₀² (2x − x²) dx = [x² − ${F('x³',3)}]₀²</li><li>= 4 − ${F(8,3)} = ${F(4,3)}</li></ol>`},
+    {t:'num', q:`lim<sub>x→∞</sub> ${F('3x² + 1','x² − 2')} มีค่าเท่าใด`, a:3,
+     s:'<ol><li>หารเศษและส่วนด้วย x²</li><li>ได้ (3 + 1/x²) ÷ (1 − 2/x²) → 3</li></ol>'},
+  ]},
+  { id:'a1-vec', subj:'math', name:'เวกเตอร์และจำนวนเชิงซ้อน', qs:[
+    {t:'num', q:'ขนาดของเวกเตอร์ u = (1, 2, 2) เท่ากับเท่าใด', a:3,
+     s:'<ol><li>|u| = √(1 + 4 + 4) = √9 = 3</li></ol>'},
+    {t:'num', q:'u = (1, 2) และ v = (3, −1) แล้ว u · v เท่ากับเท่าใด', a:1,
+     s:'<ol><li>u · v = 1(3) + 2(−1) = 1</li></ol>'},
+    {t:'num', q:'|3 + 4i| เท่ากับเท่าใด', a:5,
+     s:'<ol><li>|a + bi| = √(a² + b²) = √(9 + 16) = 5</li></ol>'},
+    {t:'num', q:'(1 + i)⁸ เท่ากับเท่าใด', a:16,
+     h:'หา (1 + i)² ก่อน', s:'<ol><li>(1 + i)² = 1 + 2i + i² = 2i</li><li>(1 + i)⁸ = (2i)⁴ = 16i⁴ = 16</li></ol>'},
+  ]},
+  { id:'a1-mat', subj:'math', name:'เมทริกซ์', qs:[
+    {t:'num', q:`det ${D('2 1;3 4')} มีค่าเท่าใด`, a:5,
+     s:'<ol><li>det = (2)(4) − (1)(3) = 5</li></ol>'},
+    {t:'num', q:`A = ${M('1 2;3 4')} แล้ว det(2A) เท่ากับเท่าใด`, a:-8,
+     h:'สำหรับเมทริกซ์ n × n: det(kA) = kⁿ det A', s:'<ol><li>det A = 4 − 6 = −2</li><li>det(2A) = 2² × (−2) = −8</li></ol>'},
+    {t:'mc', q:'A เป็นเมทริกซ์ 3 × 3 ที่ det A = 3 แล้ว det(A⁻¹) เท่ากับข้อใด', c:['−3','3','9',F(1,3),F(1,9)], a:3,
+     s:`<ol><li>det(A⁻¹) = ${F(1,'det A')} = ${F(1,3)}</li></ol>`},
+  ]},
+  { id:'a1-stat', subj:'math', name:'สถิติและความน่าจะเป็น', qs:[
+    {t:'num', q:'เลือกคณะทำงาน 5 คน จากชาย 6 คนและหญิง 4 คน โดยต้องมีหญิงอย่างน้อย 1 คน ได้กี่วิธี', a:246, u:'วิธี',
+     h:'ทั้งหมด − ไม่มีหญิงเลย', s:'<ol><li>เลือกแบบใดก็ได้: C(10, 5) = 252</li><li>ชายล้วน: C(6, 5) = 6</li><li>252 − 6 = 246</li></ol>'},
+    {t:'num', q:'ส่วนเบี่ยงเบนมาตรฐาน (ประชากร) ของข้อมูล 2, 4, 4, 4, 5, 5, 7, 9', a:2,
+     s:'<ol><li>ค่าเฉลี่ย = 40 ÷ 8 = 5</li><li>Σ(x − μ)² = 9 + 1 + 1 + 1 + 0 + 0 + 4 + 16 = 32</li><li>σ² = 32 ÷ 8 = 4 → σ = 2</li></ol>'},
+    {t:'num', q:'คะแนนสอบมีค่าเฉลี่ย 60 ส่วนเบี่ยงเบนมาตรฐาน 8 นักเรียนได้ 76 คะแนน มีค่ามาตรฐาน (z) เท่าใด', a:2,
+     s:`<ol><li>z = ${F('x − μ','σ')} = ${F('76 − 60',8)} = 2</li></ol>`},
+  ]},
+  { id:'a1-challenge', subj:'math', name:'ชุดเสมือนจริง A-Level คณิต 1', qs:[
+    {t:'num', q:'ถ้า f(x) = ax² + bx มี f′(1) = 8 และ ∫₀² f(x) dx = 12 แล้ว a + b เท่ากับเท่าใด', a:5,
+     h:'สร้างสมการ 2 สมการจากเงื่อนไขทั้งสอง',
+     s:`<ol><li>f′(x) = 2ax + b → 2a + b = 8</li><li>∫₀² (ax² + bx) dx = ${F('8a',3)} + 2b = 12 → 8a + 6b = 36</li><li>แทน b = 8 − 2a: 8a + 48 − 12a = 36 → a = 3, b = 2</li><li>a + b = 5</li></ol>`},
+    {t:'mc', q:'โยนเหรียญเที่ยงตรง 5 ครั้ง ความน่าจะเป็นที่ขึ้นหัวพอดี 3 ครั้ง', c:[F(3,5),F(5,16),F(1,8),F(3,16),F(5,32)], a:1,
+     h:'ใช้ C(n, r) × (1/2)ⁿ',
+     s:`<ol><li>จำนวนวิธีเลือกครั้งที่ขึ้นหัว: C(5, 3) = 10</li><li>ผลลัพธ์ทั้งหมด 2⁵ = 32</li><li>P = ${F(10,32)} = ${F(5,16)}</li></ol>`},
+  ]},
+]},
+
+{ id:'alevel-m2', group:'exam', name:'A-Level คณิตศาสตร์ประยุกต์ 2', tag:'สายศิลป์ / สายภาษา', color:'#8a5a2b',
+  desc:'จำนวนจริง อสมการ ดอกเบี้ย ลำดับอนุกรม สถิติ ความน่าจะเป็น',
+  topics:[
+  { id:'a2-real', subj:'math', name:'จำนวนจริงและอสมการ', qs:[
+    {t:'mc', q:'เซตคำตอบของอสมการ |x − 3| < 2 คือข้อใด', c:['(−∞, 1)','(1, 5)','[1, 5]','(−1, 5)','(5, ∞)'], a:1,
+     s:'<ol><li>−2 < x − 3 < 2</li><li>1 < x < 5</li></ol>'},
+    {t:'mc', q:'เซตคำตอบของอสมการ x² − 5x + 6 ≤ 0 คือข้อใด', c:['(2, 3)','[2, 3]','(−∞, 2] ∪ [3, ∞)','[−3, −2]','ℝ'], a:1,
+     s:'<ol><li>(x − 2)(x − 3) ≤ 0</li><li>ค่าลบหรือศูนย์อยู่ระหว่างราก: 2 ≤ x ≤ 3</li></ol>'},
+    {t:'num', q:'จำนวนเต็ม x ที่สอดคล้องกับ |2x − 1| ≤ 5 มีทั้งหมดกี่จำนวน', a:6,
+     s:'<ol><li>−5 ≤ 2x − 1 ≤ 5 → −4 ≤ 2x ≤ 6</li><li>−2 ≤ x ≤ 3</li><li>จำนวนเต็ม: −2, −1, 0, 1, 2, 3 = 6 จำนวน</li></ol>'},
+  ]},
+  { id:'a2-fin', subj:'math', name:'ดอกเบี้ยและมูลค่าของเงิน', qs:[
+    {t:'num', q:'ฝากเงิน 10,000 บาท ดอกเบี้ยทบต้นร้อยละ 10 ต่อปี เมื่อครบ 2 ปี มีเงินรวมกี่บาท', a:12100, u:'บาท',
+     s:'<ol><li>S = P(1 + r)ⁿ = 10,000(1.1)²</li><li>= 10,000 × 1.21 = 12,100 บาท</li></ol>'},
+    {t:'num', q:'ฝากเงิน 20,000 บาท ดอกเบี้ยเชิงเดียวร้อยละ 5 ต่อปี เป็นเวลา 3 ปี ได้ดอกเบี้ยกี่บาท', a:3000, u:'บาท',
+     s:'<ol><li>I = Prt = 20,000 × 0.05 × 3</li><li>= 3,000 บาท</li></ol>'},
+    {t:'num', q:'ฝากเงิน 10,000 บาท ดอกเบี้ยร้อยละ 4 ต่อปี คิดทบต้นทุกครึ่งปี ครบ 1 ปีมีเงินรวมกี่บาท', a:10404, u:'บาท',
+     h:'ทบต้นทุกครึ่งปี: อัตราต่องวด = 4% ÷ 2, จำนวนงวด = 2', s:'<ol><li>อัตราต่องวด 2%, 2 งวด</li><li>10,000(1.02)² = 10,000 × 1.0404 = 10,404 บาท</li></ol>'},
+  ]},
+  { id:'a2-seq', subj:'math', name:'ลำดับและอนุกรม', qs:[
+    {t:'num', q:'อนุกรมเรขาคณิตอนันต์ 8 + 4 + 2 + 1 + … มีผลบวกเท่าใด', a:16,
+     s:`<ol><li>a₁ = 8, r = ${F(1,2)}</li><li>S<sub>∞</sub> = ${F('a₁','1 − r')} = ${F(8,F(1,2))} = 16</li></ol>`},
+    {t:'num', q:'ลำดับเลขคณิตมี a₅ = 14 และ a₁₀ = 29 แล้ว a₂₀ เท่ากับเท่าใด', a:59,
+     s:'<ol><li>a₁₀ − a₅ = 5d = 15 → d = 3</li><li>a₁ = 14 − 4(3) = 2</li><li>a₂₀ = 2 + 19(3) = 59</li></ol>'},
+    {t:'num', q:'ผลบวก 10 พจน์แรกของอนุกรม 2 + 5 + 8 + … เท่ากับเท่าใด', a:155,
+     s:`<ol><li>a₁ = 2, d = 3</li><li>S₁₀ = ${F(10,2)}[2(2) + 9(3)] = 5 × 31 = 155</li></ol>`},
+  ]},
+  { id:'a2-stat', subj:'math', name:'สถิติและความน่าจะเป็น', qs:[
+    {t:'num', q:'ข้อมูล 3, 5, 7, 9, 11 มีควอร์ไทล์ที่ 1 เท่ากับเท่าใด (ใช้ตำแหน่ง (n + 1)/4)', a:4,
+     s:'<ol><li>ตำแหน่ง Q₁ = (5 + 1) ÷ 4 = 1.5</li><li>อยู่กึ่งกลางข้อมูลตัวที่ 1 และ 2: (3 + 5) ÷ 2 = 4</li></ol>'},
+    {t:'mc', q:'ข้อมูล 10 ค่ามีค่าเฉลี่ย 20 ถ้านำ 5 ไปบวกทุกค่า ข้อใดถูกต้อง', c:['ค่าเฉลี่ยเป็น 20 และส่วนเบี่ยงเบนมาตรฐานเพิ่มขึ้น 5','ค่าเฉลี่ยเป็น 25 และส่วนเบี่ยงเบนมาตรฐานเพิ่มขึ้น 5','ค่าเฉลี่ยเป็น 25 และส่วนเบี่ยงเบนมาตรฐานเท่าเดิม','ค่าเฉลี่ยเป็น 100 และส่วนเบี่ยงเบนมาตรฐานเท่าเดิม','ค่าเฉลี่ยเป็น 30 และส่วนเบี่ยงเบนมาตรฐานเท่าเดิม'], a:2,
+     s:'<ol><li>บวกค่าคงที่ทุกตัว → ค่าเฉลี่ยเพิ่มตามค่าคงที่: 20 + 5 = 25</li><li>การกระจายของข้อมูลไม่เปลี่ยน → ส่วนเบี่ยงเบนมาตรฐานเท่าเดิม</li></ol>'},
+    {t:'mc', q:'สุ่มไพ่ 1 ใบจากสำรับ 52 ใบ ความน่าจะเป็นที่ได้โพดำหรือ King', c:[F(17,52),F(4,13),F(1,4),F(1,13),F(1,52)], a:1,
+     h:'ระวังนับ King โพดำซ้ำ', s:`<ol><li>โพดำ 13 ใบ, King 4 ใบ, ซ้ำกัน 1 ใบ</li><li>13 + 4 − 1 = 16</li><li>P = ${F(16,52)} = ${F(4,13)}</li></ol>`},
+  ]},
+]},
+
+{ id:'alevel-phys', group:'exam', name:'A-Level ฟิสิกส์', tag:'สายวิทย์', color:'#d9642b',
+  desc:'กลศาสตร์ การสั่น ไฟฟ้า-แม่เหล็ก และฟิสิกส์ยุคใหม่',
+  topics:[
+  { id:'ap-mech', subj:'phys', name:'กลศาสตร์และโพรเจกไทล์', qs:[
+    {t:'num', q:'ขว้างวัตถุในแนวระดับด้วยความเร็ว 10 m/s จากหน้าผาสูง 20 m วัตถุตกห่างจากฐานหน้าผากี่เมตร (g = 10 m/s²)', a:20, u:'m',
+     h:'หาเวลาจากแนวดิ่งก่อน', s:`<ol><li>แนวดิ่ง: 20 = ${F(1,2)}(10)t² → t = 2 s</li><li>แนวราบ: x = 10 × 2 = 20 m</li></ol>`},
+    {t:'num', q:'วัตถุมวล 0.5 kg เคลื่อนที่เป็นวงกลมรัศมี 2 m ด้วยอัตราเร็ว 4 m/s แรงสู่ศูนย์กลางมีขนาดกี่นิวตัน', a:4, u:'N',
+     s:`<ol><li>F<sub>c</sub> = ${F('mv²','r')} = ${F('0.5 × 16',2)}</li><li>= 4 N</li></ol>`},
+    {t:'mc', q:'ที่ความสูงจากผิวโลกเท่ากับรัศมีโลก ความเร่งโน้มถ่วงมีค่าเป็นกี่เท่าของที่ผิวโลก', c:[F(1,2),F(1,3),F(1,4),F(1,8),'2'], a:2,
+     s:`<ol><li>g ∝ ${F(1,'r²')} โดย r วัดจากศูนย์กลางโลก</li><li>r = 2R → g เป็น ${F(1,4)} เท่า</li></ol>`},
+  ]},
+  { id:'ap-shm', subj:'phys', name:'การเคลื่อนที่แบบฮาร์มอนิกอย่างง่าย', qs:[
+    {t:'mc', q:'มวล 2 kg ติดสปริงที่มีค่านิจ 200 N/m คาบการสั่นเท่ากับข้อใด', c:['0.1π s','0.2π s','0.5π s','π s','2π s'], a:1,
+     s:`<ol><li>T = 2π√(${F('m','k')}) = 2π√(${F(2,200)})</li><li>= 2π × 0.1 = 0.2π s</li></ol>`},
+    {t:'mc', q:'ถ้าเพิ่มความยาวเชือกลูกตุ้มอย่างง่ายเป็น 4 เท่า คาบจะเป็นกี่เท่าของเดิม', c:[F(1,2)+' เท่า','เท่าเดิม','2 เท่า','4 เท่า','16 เท่า'], a:2,
+     s:`<ol><li>T = 2π√(${F('L','g')}) → T ∝ √L</li><li>√4 = 2 เท่า</li></ol>`},
+  ]},
+  { id:'ap-em', subj:'phys', name:'ไฟฟ้าและแม่เหล็ก', qs:[
+    {t:'num', q:'ตัวเก็บประจุ 2 μF ต่อกับความต่างศักย์ 10 V เก็บประจุได้กี่ไมโครคูลอมบ์', a:20, u:'μC',
+     s:'<ol><li>Q = CV = 2 μF × 10 V = 20 μC</li></ol>'},
+    {t:'num', q:'ลวดยาว 0.5 m มีกระแส 4 A วางตั้งฉากกับสนามแม่เหล็ก 0.2 T แรงที่กระทำต่อลวดกี่นิวตัน', a:0.4, u:'N',
+     s:'<ol><li>F = ILB sin 90° = 4 × 0.5 × 0.2</li><li>= 0.4 N</li></ol>'},
+    {t:'num', q:'หม้อแปลงมีขดลวดปฐมภูมิ 1000 รอบ ทุติยภูมิ 50 รอบ ต่อไฟ 220 V ด้านทุติยภูมิได้กี่โวลต์', a:11, u:'V',
+     s:`<ol><li>${F('V<sub>s</sub>','V<sub>p</sub>')} = ${F('N<sub>s</sub>','N<sub>p</sub>')}</li><li>V<sub>s</sub> = 220 × ${F(50,1000)} = 11 V</li></ol>`},
+  ]},
+  { id:'ap-modern', subj:'phys', name:'ฟิสิกส์อะตอมและนิวเคลียร์', qs:[
+    {t:'mc', q:'สารกัมมันตรังสีมีครึ่งชีวิต 5 วัน เมื่อผ่านไป 20 วัน จะเหลือสารกี่ส่วนของเดิม', c:[F(1,4),F(1,8),F(1,16),F(1,20),F(1,32)], a:2,
+     s:`<ol><li>20 ÷ 5 = 4 ช่วงครึ่งชีวิต</li><li>เหลือ (${F(1,2)})⁴ = ${F(1,16)}</li></ol>`},
+    {t:'mc', q:'ถ้าความยาวคลื่นของแสงลดลงครึ่งหนึ่ง พลังงานของโฟตอนจะเป็นเท่าใด', c:['ลดลงครึ่งหนึ่ง','เท่าเดิม','2 เท่า','4 เท่า',F(1,4)+' เท่า'], a:2,
+     s:`<ol><li>E = hf = ${F('hc','λ')} → E ∝ ${F(1,'λ')}</li><li>λ ลดเหลือครึ่ง → E เป็น 2 เท่า</li></ol>`},
+    {t:'num', q:'สารกัมมันตรังสี 80 g มีครึ่งชีวิต 2 ชั่วโมง ต้องใช้เวลากี่ชั่วโมงจึงเหลือ 10 g', a:6, u:'ชั่วโมง',
+     s:'<ol><li>80 → 40 → 20 → 10 g = 3 ช่วงครึ่งชีวิต</li><li>3 × 2 = 6 ชั่วโมง</li></ol>'},
+  ]},
+]},
+];
+
+/* =========================================================
+   ระบบเว็บ (ปกติไม่ต้องแก้ส่วนนี้)
+   ========================================================= */
+const store = {
+  get(k,d){ try{ const v = localStorage.getItem('yt_'+k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
+  set(k,v){ try{ localStorage.setItem('yt_'+k, JSON.stringify(v)); }catch(e){} }
+};
+let progress = store.get('progress', {});   // {topicId: {qIndex: 1=ถูก, 0=ดูเฉลย}}
+let unlocked = true;   // ทุกชุดเปิดใช้ฟรี
+let subjFilter = store.get('subj', 'all');
+let teacher = false;
+let session = {};                            // คำตอบที่เลือกในหน้าปัจจุบัน
+
+const app = document.getElementById('app');
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const SUBJ = {math:'คณิตศาสตร์', phys:'ฟิสิกส์'};
+const KEYS = ['1','2','3','4','5'];
+
+document.getElementById('hdrLine').href = LINE_URL;
+document.getElementById('lineIdText').textContent = CONFIG.lineId;
+const sw = document.getElementById('teacherSw');
+sw.onclick = () => { teacher = !teacher; sw.setAttribute('aria-pressed', teacher); route(); };
+
+function findTopic(id){ for(const L of LEVELS){ const T = L.topics.find(t=>t.id===id); if(T) return [L,T]; } return null; }
+function topicDone(T){ const p = progress[T.id]||{}; return Object.values(p).filter(v=>v===1).length; }
+function visibleTopics(L){ return L.topics.filter(t => subjFilter==='all' || t.subj===subjFilter); }
+function saveProgress(){ store.set('progress', progress); }
+
+function lineCTA(title, text){
+  return `<div class="lbanner"><div class="txt"><h3>${title}</h3><p>${text}</p></div>
+    <a class="btn btn-line" href="${LINE_URL}" target="_blank" rel="noopener"><span class="line-ico">LINE</span>เพิ่มเพื่อน ${esc(CONFIG.lineId)}</a></div>`;
+}
+function subjChips(){
+  const opts = [['all','ทั้งหมด'],['math','คณิตศาสตร์'],['phys','ฟิสิกส์']];
+  return `<div class="chips" role="group" aria-label="เลือกวิชา">${opts.map(([v,l])=>`<button class="chip" data-subj="${v}" aria-pressed="${subjFilter===v}">${l}</button>`).join('')}</div>`;
+}
+function bindChips(){
+  app.querySelectorAll('[data-subj]').forEach(b => b.onclick = () => { subjFilter = b.dataset.subj; store.set('subj', subjFilter); route(); });
+}
+
+/* ---------- หน้าแรก ---------- */
+function renderHome(){
+  const card = L => {
+    const ts = visibleTopics(L);
+    const total = ts.reduce((s,t)=>s+t.qs.length,0);
+    const done = ts.reduce((s,t)=>s+topicDone(t),0);
+    const subs = [...new Set(ts.map(t=>t.subj))];
+    if(!ts.length) return '';
+    return `<a class="lvl" href="#${L.id}"><span class="stripe" style="background:${L.color}"></span>
+      <span class="tag">${L.tag}</span><h3>${L.name}</h3><p>${L.desc}</p>
+      <div class="meta">${subs.map(s=>`<span class="pill ${s}">${SUBJ[s]}</span>`).join('')}<span class="pill lock">${ts.length} เรื่อง · ${total} ข้อ</span></div>
+      <div class="bar" title="ทำถูกแล้ว ${done}/${total}"><i style="width:${total?done/total*100:0}%"></i></div></a>`;
+  };
+  app.innerHTML = `
+  <section class="hero">
+    <h1>ฝึกทำโจทย์ก่อน<br>แล้วค่อยกดดูวิธีทำ</h1>
+    <p>คลังแบบฝึกหัดคณิตศาสตร์และฟิสิกส์ ตั้งแต่ประถมถึง A-Level แยกตามระดับชั้นและเรื่อง ตรวจคำตอบได้ทันที ใช้ฟรีบนมือถือและคอมพิวเตอร์</p>
+    <div class="steps">
+      <div class="step"><b>ขั้นที่ 1</b>เลือกระดับชั้นหรือสนามสอบ</div>
+      <div class="step"><b>ขั้นที่ 2</b>เลือกเรื่องที่อยากฝึก</div>
+      <div class="step"><b>ขั้นที่ 3</b>ตอบแล้วกด "ตรวจคำตอบ"</div>
+      <div class="step"><b>ขั้นที่ 4</b>ทำเองก่อน แล้วค่อยกด "ดูวิธีทำ"</div>
+    </div>
+  </section>
+  ${subjChips()}
+  <div class="sec-title"><h2>ตามระดับชั้น</h2><span>เรียนไปพร้อมบทเรียนในห้อง</span></div>
+  <div class="grid">${LEVELS.filter(l=>l.group==='grade').map(card).join('')}</div>
+  <div class="sec-title"><h2>เตรียมสอบ</h2><span>สอบเข้า ม.1 · ม.4 · A-Level</span></div>
+  <div class="grid">${LEVELS.filter(l=>l.group==='exam').map(card).join('') || '<p class="empty">ไม่มีชุดในวิชานี้</p>'}</div>
+  ${lineCTA('มีคำถาม หรืออยากได้โจทย์เพิ่ม?', 'ทุกชุดใช้ฟรีทั้งหมด ถ้าอยากถามโจทย์ที่ไม่เข้าใจ หรือติดตามชุดฝึกใหม่ ทักมาได้ทาง LINE')}`;
+  bindChips();
+}
+
+/* ---------- หน้าระดับชั้น ---------- */
+function renderLevel(L){
+  const ts = visibleTopics(L);
+  app.innerHTML = `
+  <div class="crumb"><a href="#">หน้าแรก</a> › ${L.name}</div>
+  <h1 class="ptitle">${L.name}</h1><p class="psub">${L.tag} · ${L.desc}</p>
+  ${subjChips()}
+  <div class="tlist">${ts.map(T=>{
+    const d = topicDone(T), n = T.qs.length, lock = T.locked && !unlocked;
+    return `<a class="topic" href="#${T.id}"><div class="row"><h3>${lock?'🔒 ':''}${T.name}</h3><span class="pill ${T.subj}">${SUBJ[T.subj]}</span></div>
+      <small>${n} ข้อ · ทำถูกแล้ว ${d}/${n}</small>
+      <div class="bar"><i style="width:${d/n*100}%"></i></div></a>`;
+  }).join('') || '<p class="empty">ระดับนี้ยังไม่มีเรื่องในวิชาที่เลือก</p>'}</div>`;
+  bindChips();
+}
+
+/* ---------- หน้าล็อก ---------- */
+function renderLock(L,T){
+  app.innerHTML = `
+  <div class="crumb"><a href="#">หน้าแรก</a> › <a href="#${L.id}">${L.name}</a> › ${T.name}</div>
+  <h1 class="ptitle">🔒 ${T.name}</h1><p class="psub">ชุดพิเศษสำหรับเพื่อนใน LINE ใช้ฟรี</p>
+  <div class="lockbox">
+    <ol>
+      <li>กดปุ่มด้านล่างเพื่อเพิ่มเพื่อน LINE <b>${esc(CONFIG.lineId)}</b></li>
+      <li>พิมพ์คำว่า <b>รหัส</b> ในแชท ระบบจะส่งรหัสปลดล็อกให้</li>
+      <li>นำรหัสมากรอกที่นี่ ปลดล็อกชุดพิเศษทุกชุดในเครื่องนี้</li>
+    </ol>
+    <a class="btn btn-line" href="${LINE_URL}" target="_blank" rel="noopener"><span class="line-ico">LINE</span>เพิ่มเพื่อน ${esc(CONFIG.lineId)}</a>
+    <div class="lockrow"><input class="ans" id="code" placeholder="กรอกรหัสปลดล็อก" autocomplete="off"><button class="btn btn-dark" id="unlockBtn">ปลดล็อก</button></div>
+    <div class="fb" id="lockFb"></div>
+  </div>`;
+  const go = () => {
+    const v = document.getElementById('code').value.trim().toUpperCase();
+    const fb = document.getElementById('lockFb');
+    if(v === CONFIG.unlockCode.toUpperCase()){ unlocked = true; store.set('unlocked', true); route(); }
+    else { fb.className = 'fb show bad'; fb.textContent = 'รหัสไม่ถูกต้อง ลองตรวจตัวสะกดอีกครั้ง'; }
+  };
+  document.getElementById('unlockBtn').onclick = go;
+  document.getElementById('code').onkeydown = e => { if(e.key==='Enter') go(); };
+}
+
+/* ---------- หน้าทำโจทย์ ---------- */
+function answerText(q){ return q.t==='mc' ? `ข้อ ${KEYS[q.a]}) ${q.c[q.a]}` : `${fmt(q.a)}${q.u?' '+q.u:''}`; }
+function fmt(n){ return Number(n).toLocaleString('en-US',{maximumFractionDigits:6}); }
+function parseNum(s){
+  s = String(s).replace(/,/g,'').replace(/−/g,'-').replace(/\s/g,'');
+  if(!s) return NaN;
+  const m = s.match(/^(-?\d*\.?\d+)\/(-?\d*\.?\d+)$/);
+  if(m) return parseFloat(m[1]) / parseFloat(m[2]);
+  return /^-?\d*\.?\d+$/.test(s) ? parseFloat(s) : NaN;
+}
+
+function renderTopic(L,T){
+  if(T.locked && !unlocked) return renderLock(L,T);
+  session = {};
+  const idx = L.topics.indexOf(T);
+  const next = L.topics.slice(idx+1).find(t => subjFilter==='all' || t.subj===subjFilter);
+  app.innerHTML = `
+  <div class="crumb"><a href="#">หน้าแรก</a> › <a href="#${L.id}">${L.name}</a> › ${T.name}</div>
+  <h1 class="ptitle">${T.name}</h1>
+  <p class="psub"><span class="pill ${T.subj}">${SUBJ[T.subj]}</span> &nbsp;${T.qs.length} ข้อ · ${teacher?'โหมดครู: แสดงวิธีทำทุกข้อ':'ทำเองก่อน แล้วค่อยกดดูวิธีทำ'}</p>
+  <div class="qs">${T.qs.map((q,i)=>qHTML(q,i,T)).join('')}</div>
+  <div class="summary" id="summary"></div>
+  <div class="bottombar">
+    <button class="btn btn-dark" id="submitAll">ส่งคำตอบทั้งชุด</button>
+    <button class="btn btn-ghost" id="resetAll">ล้างคำตอบ ทำใหม่</button>
+    ${next?`<a class="btn btn-ghost" href="#${next.id}">เรื่องถัดไป: ${next.name} →</a>`:''}
+  </div>`;
+  T.qs.forEach((q,i)=>bindQ(q,i,T));
+  document.getElementById('submitAll').onclick = () => submitAll(T);
+  document.getElementById('resetAll').onclick = () => { delete progress[T.id]; saveProgress(); renderTopic(L,T); window.scrollTo({top:0,behavior:'smooth'}); };
+}
+
+function qHTML(q,i,T){
+  const body = q.t==='mc'
+    ? `<div class="choices">${q.c.map((c,k)=>`<button class="ch" data-k="${k}"><span class="k">${KEYS[k]})</span><span>${c}</span></button>`).join('')}</div>`
+    : `<div class="numrow"><input class="ans" inputmode="decimal" placeholder="พิมพ์คำตอบ" aria-label="คำตอบข้อ ${i+1}">${q.u?`<span class="unit">${q.u}</span>`:''}</div>`;
+  return `<div class="q" id="q${i}">
+    <div class="qh"><span class="qn">ข้อ ${i+1}</span><span class="qtype">${q.t==='mc'?'ปรนัย':'เติมคำตอบ'}</span><span class="status"></span></div>
+    <div class="qt">${q.q}</div>${body}
+    <div class="actions">
+      <button class="btn btn-dark" data-act="check">ตรวจคำตอบ</button>
+      ${q.h?'<button class="btn btn-ghost" data-act="hint">คำใบ้</button>':''}
+      <button class="btn btn-ghost" data-act="sol" ${teacher?'':'hidden'}>ดูวิธีทำ</button>
+    </div>
+    <div class="fb"></div>
+    ${q.h?`<div class="hint">💡 ${q.h}</div>`:''}
+    <div class="sol ${T.subj==='phys'?'phys':''} ${teacher?'show':''}"><div class="ansline">คำตอบ: ${answerText(q)}</div>${q.s}</div>
+  </div>`;
+}
+
+function bindQ(q,i,T){
+  const el = document.getElementById('q'+i);
+  const fb = el.querySelector('.fb'), st = el.querySelector('.status');
+  const solBtn = el.querySelector('[data-act="sol"]'), sol = el.querySelector('.sol');
+  session[i] = {val:null, checked:false, ok:false};
+  if(q.t==='mc'){
+    el.querySelectorAll('.ch').forEach(b => b.onclick = () => {
+      el.querySelectorAll('.ch').forEach(x=>x.classList.remove('sel','right','wrong'));
+      b.classList.add('sel'); session[i].val = +b.dataset.k; fb.className='fb';
+    });
+  } else {
+    const inp = el.querySelector('.ans');
+    inp.oninput = () => { session[i].val = inp.value; fb.className='fb'; };
+    inp.onkeydown = e => { if(e.key==='Enter') check(); };
+  }
+  function check(){
+    const s = session[i];
+    if(s.val===null || s.val===''){ fb.className='fb show neutral'; fb.textContent='ยังไม่ได้ตอบ ลองเลือกหรือพิมพ์คำตอบก่อนนะ'; return false; }
+    let ok;
+    if(q.t==='mc'){
+      ok = s.val===q.a;
+      const b = el.querySelector(`.ch[data-k="${s.val}"]`); b.classList.add(ok?'right':'wrong');
+    } else {
+      const v = parseNum(s.val);
+      if(isNaN(v)){ fb.className='fb show neutral'; fb.textContent='พิมพ์เป็นตัวเลข เช่น 12, 0.5, -8 หรือ 3/4'; return false; }
+      ok = Math.abs(v - q.a) <= 1e-6 + Math.abs(q.a)*1e-6;
+    }
+    s.checked = true; s.ok = ok;
+    fb.className = 'fb show ' + (ok?'ok':'bad');
+    fb.textContent = ok ? 'ถูกต้อง เก่งมาก!' : (q.h ? 'ยังไม่ถูก ลองคิดอีกครั้ง หรือกด "คำใบ้" / "ดูวิธีทำ"' : 'ยังไม่ถูก ลองคิดอีกครั้ง หรือกด "ดูวิธีทำ"');
+    st.className = 'status ' + (ok?'ok':'bad'); st.textContent = ok ? '✓ ถูก' : '✗ ยังไม่ถูก';
+    el.classList.toggle('correct', ok);
+    solBtn.hidden = false;
+    const p = progress[T.id] = progress[T.id] || {};
+    if(ok) p[i] = 1; else if(p[i]===undefined) p[i] = 0;
+    saveProgress();
+    return ok;
+  }
+  el._check = check;
+  el.querySelector('[data-act="check"]').onclick = check;
+  const hb = el.querySelector('[data-act="hint"]');
+  if(hb) hb.onclick = () => el.querySelector('.hint').classList.toggle('show');
+  solBtn.onclick = () => { const on = sol.classList.toggle('show'); solBtn.textContent = on ? 'ซ่อนวิธีทำ' : 'ดูวิธีทำ'; };
+}
+
+function submitAll(T){
+  let correct = 0, answered = 0;
+  T.qs.forEach((q,i) => {
+    const el = document.getElementById('q'+i);
+    if(session[i].val!==null && session[i].val!==''){ answered++; if(el._check()) correct++; }
+    else { el.querySelector('[data-act="sol"]').hidden = false; }
+  });
+  const n = T.qs.length, pct = Math.round(correct/n*100);
+  const msg = pct===100 ? 'เยี่ยมมาก! ทำถูกครบทุกข้อ' : pct>=70 ? 'ทำได้ดี ลองดูวิธีทำข้อที่ผิดแล้วทำซ้ำอีกรอบ' : 'ไม่เป็นไร ดูวิธีทำทีละข้อ แล้วกด "ล้างคำตอบ ทำใหม่" ฝึกอีกรอบ';
+  const box = document.getElementById('summary');
+  box.className = 'summary show';
+  box.innerHTML = `<div class="score">${correct} / ${n} ข้อ</div><p style="margin:4px 0 0">${msg}${answered<n?` (ยังไม่ได้ตอบ ${n-answered} ข้อ)`:''}</p>
+    <p style="color:var(--muted);margin:6px 0 0;font-size:15px">ตอนนี้กด "ดูวิธีทำ" ได้ทุกข้อแล้ว</p>
+    ${lineCTA('อยากได้โจทย์แนวนี้เพิ่ม?', 'เพิ่มเพื่อน LINE รับชุดฝึกใหม่ทุกสัปดาห์ และถามโจทย์ที่ไม่เข้าใจได้')}`;
+  box.scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+/* ---------- เส้นทาง (ลิงก์แชร์ได้ เช่น #h-calc) ---------- */
+function route(){
+  const id = decodeURIComponent(location.hash.slice(1));
+  const L = LEVELS.find(l=>l.id===id);
+  if(L) renderLevel(L);
+  else { const f = id && findTopic(id); if(f) renderTopic(f[0], f[1]); else renderHome(); }
+}
+window.addEventListener('hashchange', () => { route(); window.scrollTo(0,0); });
+route();
+</script>
+</body>
+</html>
