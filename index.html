@@ -815,7 +815,7 @@ function renderHome(){
   <a class="lvl examcard" href="#exams"><span class="stripe" style="background:#1d2433"></span>
     <span class="tag">A-Level ทุกวิชา · สอบเข้า ม.4 · สอบเข้า ม.1</span><h3>คลังข้อสอบเก่า + ชุดจำลองสอบ ${visibleMocks().length} ชุด${subjFilter==='all'?'':' ('+SUBJ[subjFilter]+')'}</h3>
     <p>ข้อสอบ A-Level ฉบับจริงพร้อมเฉลยจาก ทปอ. และชุดจำลองสอบ 30 ข้อ จับเวลา ตรวจคะแนนอัตโนมัติ</p>
-    <div class="meta">${[...new Set(visibleMocks().flatMap(mockSubjs))].map(k=>`<span class="pill ${k}">${SUBJ[k]}</span>`).join('')}</div></a>
+    <div class="meta">${(subjFilter==='all' ? [...new Set(visibleMocks().flatMap(mockSubjs))] : [subjFilter]).map(k=>`<span class="pill ${k}">${SUBJ[k]}</span>`).join('')}</div></a>
   ${lineCTA('มีคำถาม หรืออยากได้โจทย์เพิ่ม?', 'ทุกชุดใช้ฟรีทั้งหมด ถ้าอยากถามโจทย์ที่ไม่เข้าใจ หรือติดตามชุดฝึกใหม่ ทักมาได้ทาง LINE')}`;
   bindChips();
 }
