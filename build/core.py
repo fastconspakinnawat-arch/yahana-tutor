@@ -72,6 +72,7 @@ def build_topic(templates, n, seed, nopt=4, exclude=()):
     while len(out) < n:
         tries += 1
         if tries > 5000:
+            if len(out) >= 12: break
             raise RuntimeError(f'only {len(out)} unique questions for seed {seed}')
         t = templates[(tries - 1) % len(templates)]
         try:

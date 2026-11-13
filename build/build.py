@@ -3,7 +3,7 @@ sys.path.insert(0, '.')
 from core import build_topic, num_wrongs, num, fr
 import random
 from fractions import Fraction as Fr
-CONVERT = {'bank_grade': .35, 'bank_m1': .5, 'bank_m4': .7, 'bank_a1': 0, 'bank_a2': .2, 'bank_ap': .75}
+CONVERT = {'bank_more': .35, 'bank_grade': .35, 'bank_m1': .5, 'bank_m4': .7, 'bank_a1': 0, 'bank_a2': .2, 'bank_ap': .75}
 def to_mc(q, rng, nopt, phys=False):
     v = Fr(q['a']).limit_denominator(10**6)
     if phys:
@@ -26,7 +26,7 @@ def to_mc(q, rng, nopt, phys=False):
     return d
 
 
-MODULES = sys.argv[1:] or ['bank_m1', 'bank_m4', 'bank_a1', 'bank_a2', 'bank_ap', 'bank_grade']
+MODULES = sys.argv[1:] or ['bank_m1', 'bank_m4', 'bank_a1', 'bank_a2', 'bank_ap', 'bank_grade', 'bank_more']
 bank, new = {}, {}
 def fix(t):
     t = t.replace(' < ', ' &lt; ').replace('− -', '+ ').replace('+ -', '− ').replace('= -', '= −').replace('(-', '(−').replace(', -', ', −')
@@ -41,7 +41,7 @@ for mi, mod in enumerate(MODULES):
     for ti, (tid, tpls) in enumerate(m.TOPICS.items()):
         qs = build_topic(tpls, 30, seed=1000 * (mi + 1) + ti, nopt=m.NOPT)
         crng = random.Random(77 + ti)
-        qs = [to_mc(q, crng, m.NOPT, mod == 'bank_ap' or tid[:3] in ('mp-', 'hp-')) if q['t'] == 'num' and crng.random() < CONVERT.get(mod, 0) else q for q in qs]
+        qs = [to_mc(q, crng, m.NOPT, mod == 'bank_ap' or tid[:3] in ('mp-', 'hp-') or tid == 'o-phys') if q['t'] == 'num' and crng.random() < CONVERT.get(mod, 0) else q for q in qs]
         for q in qs:
             clean(q)
             txt = json.dumps(q, ensure_ascii=False)

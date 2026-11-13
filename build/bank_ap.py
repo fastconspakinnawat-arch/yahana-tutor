@@ -182,7 +182,7 @@ def nucleus(rng, mc):
     na, nb = R(rng, 1, 4), R(rng, 0, 3)
     A2, Z2 = A - 4 * na, Z - 2 * na + nb
     corr = f'A = {A2}, Z = {Z2}'
-    wr = [f'A = {A2}, Z = {Z - 2*na - nb}', f'A = {A - 2*na}, Z = {Z2}', f'A = {A2 - nb}, Z = {Z2}', f'A = {A2}, Z = {Z2 + 1}', f'A = {A - 4*na - 4*nb}, Z = {Z - 2*na - 2*nb}']
+    wr = [f'A = {A2}, Z = {Z - 2*na - nb}', f'A = {A - 2*na}, Z = {Z2}', f'A = {A2 - nb}, Z = {Z2}', f'A = {A2}, Z = {Z2 + 1}', f'A = {A - 4*na - 4*nb}, Z = {Z - 2*na - 2*nb}', f'A = {A2 + 4}, Z = {Z2 + 2}', f'A = {A2}, Z = {Z2 - 1}']
     return mc(f'นิวเคลียส (A = {A}, Z = {Z}) สลายให้อนุภาคแอลฟา {na} ตัว และบีตาลบ {nb} ตัว นิวเคลียสที่ได้มีเลขมวล A และเลขอะตอม Z เท่าใด', corr, wr,
               ol('แอลฟา: A ลด 4, Z ลด 2 · บีตาลบ: A เท่าเดิม, Z เพิ่ม 1', f'A = {A} − {4*na} = {A2}', f'Z = {Z} − {2*na} + {nb} = {Z2}'))
 
