@@ -85,7 +85,7 @@ header{position:sticky;top:0;z-index:10;background:rgba(246,244,239,.92);backdro
 .qt .pic{font-size:34px;line-height:1.45;letter-spacing:3px;margin:8px 0;word-break:break-all}
 .ch .pic{font-size:28px}
 .qt .pic s.eat{opacity:.45;text-decoration-thickness:3px;text-decoration-color:#c8202a}
-.qt pre.vt{font:600 28px/1.35 ui-monospace,Consolas,'Courier New',monospace;display:inline-block;margin:8px 0;padding:10px 18px;background:#fff;border:1px solid #e3dfd5;border-radius:12px}
+.qt pre.vt{font:600 28px/1.35 ui-monospace,Consolas,'Courier New',monospace;display:block;width:fit-content;margin:8px 0;padding:10px 18px;background:#fff;border:1px solid #e3dfd5;border-radius:12px}
 .qt .clk{margin:8px 0}
 .qt .passage{background:#fffaf0;border-left:4px solid #e0a100;padding:10px 14px;border-radius:8px;margin:0 0 10px;line-height:1.8}
 .pill.lock{background:#efece4;color:var(--muted)}
@@ -545,6 +545,21 @@ const LEVELS = [
   ]},
 ]},
 
+{ id:'exam-rt', group:'exam', src:'แนวสอบ RT ป.1', name:'RT ป.1 (การอ่านออก อ่านรู้เรื่อง)', tag:'ภาษาไทย ป.1', color:'#e05a8a',
+  desc:'ฝึกอ่านคำ ตัวสะกด และอ่านเรื่องสั้นแล้วตอบคำถาม',
+  topics:[]},
+{ id:'exam-nt', group:'exam', src:'แนวสอบ NT ป.3', name:'NT ป.3', tag:'คณิต · ไทย', color:'#c2410c',
+  desc:'ความสามารถด้านคำนวณและด้านภาษาไทยแนวสอบ NT',
+  topics:[]},
+{ id:'onet-p6', group:'exam', src:'แนว O-NET ป.6', name:'O-NET ป.6', tag:'คณิต ไทย อังกฤษ วิทย์', color:'#0f766e',
+  desc:'รวมโจทย์ 4 วิชาหลักแนวสอบ O-NET ชั้น ป.6',
+  topics:[]},
+{ id:'onet-m3', group:'exam', src:'แนว O-NET ม.3', name:'O-NET ม.3', tag:'คณิต ไทย อังกฤษ วิทย์', color:'#1d4ed8',
+  desc:'รวมโจทย์ 4 วิชาหลักแนวสอบ O-NET ชั้น ม.3',
+  topics:[]},
+{ id:'onet-m6', group:'exam', src:'แนว O-NET ม.6', name:'O-NET ม.6', tag:'คณิต ไทย อังกฤษ วิทย์ สังคม', color:'#7c3aed',
+  desc:'รวมโจทย์ 5 วิชาแนวสอบ O-NET ชั้น ม.6',
+  topics:[]},
 { id:'alevel-m1', group:'exam', src:'แนว A-Level คณิต 1', name:'A-Level คณิตศาสตร์ประยุกต์ 1', tag:'สายวิทย์', color:'#2d5bd8',
   desc:'ฟังก์ชัน แคลคูลัส เวกเตอร์ จำนวนเชิงซ้อน เมทริกซ์ สถิติ (ปรนัย + เติมคำตอบ)',
   topics:[
@@ -689,21 +704,6 @@ const LEVELS = [
   topics:[]},
 { id:'alevel-eng', group:'exam', src:'แนว A-Level / TGAT ภาษาอังกฤษ', name:'A-Level ภาษาอังกฤษ / TGAT Eng', tag:'ทุกสาย', color:'#2a55b8',
   desc:'Tenses, Grammar, Vocabulary และ Conversation',
-  topics:[]},
-{ id:'exam-rt', group:'exam', src:'แนวสอบ RT ป.1', name:'RT ป.1 (การอ่านออก อ่านรู้เรื่อง)', tag:'ภาษาไทย ป.1', color:'#e05a8a',
-  desc:'ฝึกอ่านคำ ตัวสะกด และอ่านเรื่องสั้นแล้วตอบคำถาม',
-  topics:[]},
-{ id:'exam-nt', group:'exam', src:'แนวสอบ NT ป.3', name:'NT ป.3', tag:'คณิต · ไทย', color:'#c2410c',
-  desc:'ความสามารถด้านคำนวณและด้านภาษาไทยแนวสอบ NT',
-  topics:[]},
-{ id:'onet-p6', group:'exam', src:'แนว O-NET ป.6', name:'O-NET ป.6', tag:'คณิต ไทย อังกฤษ วิทย์', color:'#0f766e',
-  desc:'รวมโจทย์ 4 วิชาหลักแนวสอบ O-NET ชั้น ป.6',
-  topics:[]},
-{ id:'onet-m3', group:'exam', src:'แนว O-NET ม.3', name:'O-NET ม.3', tag:'คณิต ไทย อังกฤษ วิทย์', color:'#1d4ed8',
-  desc:'รวมโจทย์ 4 วิชาหลักแนวสอบ O-NET ชั้น ม.3',
-  topics:[]},
-{ id:'onet-m6', group:'exam', src:'แนว O-NET ม.6', name:'O-NET ม.6', tag:'คณิต ไทย อังกฤษ วิทย์ สังคม', color:'#7c3aed',
-  desc:'รวมโจทย์ 5 วิชาแนวสอบ O-NET ชั้น ม.6',
   topics:[]},
 ];
 
