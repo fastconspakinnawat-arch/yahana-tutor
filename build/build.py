@@ -26,7 +26,7 @@ def to_mc(q, rng, nopt, phys=False):
     return d
 
 
-MODULES = sys.argv[1:] or ['bank_m1', 'bank_m4', 'bank_a1', 'bank_a2', 'bank_ap', 'bank_grade', 'bank_more']
+MODULES = sys.argv[1:] or ['bank_m1', 'bank_m4', 'bank_a1', 'bank_a2', 'bank_ap', 'bank_grade', 'bank_more', 'bank_thai', 'bank_eng', 'bank_soc', 'bank_chem', 'bank_bio', 'bank_entr']
 bank, new = {}, {}
 def fix(t):
     t = t.replace(' < ', ' &lt; ').replace('− -', '+ ').replace('+ -', '− ').replace('= -', '= −').replace('(-', '(−').replace(', -', ', −')
@@ -39,13 +39,16 @@ def clean(q):
 for mi, mod in enumerate(MODULES):
     m = importlib.import_module(mod)
     for ti, (tid, tpls) in enumerate(m.TOPICS.items()):
-        qs = build_topic(tpls, 30, seed=1000 * (mi + 1) + ti, nopt=m.NOPT)
+        if callable(tpls):
+            qs = tpls(random.Random(1000 * (mi + 1) + ti), 30)
+        else:
+            qs = build_topic(tpls, 30, seed=1000 * (mi + 1) + ti, nopt=m.NOPT)
         crng = random.Random(77 + ti)
         qs = [to_mc(q, crng, m.NOPT, mod == 'bank_ap' or tid[:3] in ('mp-', 'hp-') or tid == 'o-phys') if q['t'] == 'num' and crng.random() < CONVERT.get(mod, 0) else q for q in qs]
         for q in qs:
             clean(q)
             txt = json.dumps(q, ensure_ascii=False)
-            assert not re.search(r'None|nan|inf\b', txt), txt
+            assert not re.search(r'None|\bnan\b|\binf\b', txt), txt
             if q['t'] == 'mc':
                 assert len(set(q['c'])) == len(q['c']) == m.NOPT and 0 <= q['a'] < m.NOPT, q
             else:
