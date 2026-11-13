@@ -26,7 +26,7 @@ def to_mc(q, rng, nopt, phys=False):
     return d
 
 
-MODULES = sys.argv[1:] or ['bank_m1', 'bank_m4', 'bank_a1', 'bank_a2', 'bank_ap', 'bank_grade', 'bank_more', 'bank_thai', 'bank_eng', 'bank_soc', 'bank_chem', 'bank_bio', 'bank_entr']
+MODULES = sys.argv[1:] or ['bank_m1', 'bank_m4', 'bank_a1', 'bank_a2', 'bank_ap', 'bank_grade', 'bank_more', 'bank_thai', 'bank_eng', 'bank_soc', 'bank_chem', 'bank_bio', 'bank_entr', 'bank_kids', 'bank_fill']
 bank, new = {}, {}
 def fix(t):
     t = t.replace(' < ', ' &lt; ').replace('− -', '+ ').replace('+ -', '− ').replace('= -', '= −').replace('(-', '(−').replace(', -', ', −')
